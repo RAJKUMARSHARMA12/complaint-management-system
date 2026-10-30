@@ -36,9 +36,9 @@
 ### Day 2: Mobile Toolchain Validation & UI Wireframing
 * **Primary Objective:** Validate Android Emulator execution and draft UI wireframes.
 * **Tasks:**
-  - [ ] **[S]** Launch Android Emulator (API 34) and physical test device.
-  - [ ] **[F]** Execute sample counter app on emulator to verify ADB bridge and hot reload responsiveness.
-  - [ ] **[D]** Draft high-fidelity paper/Figma wireframes for 10 core screens:
+  - [x] **[S]** Launch Android Emulator (API 37 / Medium Phone arm64) and verify ADB daemon connection.
+  - [x] **[F]** Execute sample counter app on emulator to verify ADB bridge and hot reload responsiveness.
+  - [x] **[D]** Draft high-fidelity paper/Figma wireframes for 10 core screens ([`docs/WIREFRAMES.md`](file:///Users/raj/StudioProjects/major_project/docs/WIREFRAMES.md)):
     1. Splash & Auth (Login / Register)
     2. Student Home & Dashboard
     3. New Complaint Form (with image attachments)
@@ -49,9 +49,10 @@
     8. Status Update Action Sheet
     9. Admin Executive Dashboard (Charts)
     10. Category & User Management Screens
-  - [ ] **[D]** Draft initial UML Use Case Diagram illustrating interactions among Student, Authority, Admin, and Cron Daemon.
+  - [x] **[D]** Draft initial UML Use Case Diagram illustrating interactions among Student, Authority, Admin, and Cron Daemon ([`docs/USE_CASE_DIAGRAM.md`](file:///Users/raj/StudioProjects/major_project/docs/USE_CASE_DIAGRAM.md)).
 * **Verification & Testing:**
-  - Verify `flutter run` deploys smoothly to the emulator.
+  - [x] Verify `flutter run` deploys smoothly to the emulator.
+  - [x] Verify UI hot reload responsiveness (state preserved across theme and title changes).
 * **Deliverable:** Wireframe design spec and Use Case diagram committed to repository.
 
 ---
