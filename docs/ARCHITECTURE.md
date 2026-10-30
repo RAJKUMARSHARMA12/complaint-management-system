@@ -56,19 +56,22 @@ The **CampusVoice** platform implements a distributed, three-tier client-server 
 |   +-------------------+-----------------------------------+-------------------+   |
 +-----------------------|-----------------------------------|-----------------------+
                         |                                   |
-                        | Mongoose Connection Pool          | Cloudinary SDK Stream
-                        | (TLS / SCRAM-SHA-256)             | (API Key / Secret)
+                        | Mongoose Connection Pool          | Static Media Hosting Stream
+                        | (SCRAM-SHA-256 / Port 27017)      | (Nginx Volume / Port 8080)
                         v                                   v
 +-----------------------------------+   +-------------------------------------------+
 |         PERSISTENCE TIER          |   |            MEDIA STORAGE TIER             |
 |                                   |   |                                           |
 |  +-----------------------------+  |   |  +-------------------------------------+  |
-|  |     MongoDB Atlas Cluster   |  |   |  |       Cloudinary Media CDN          |  |
+|  |   Docker MongoDB (v7.0)     |  |   |  |   Docker Media Server (Nginx)       |  |
 |  | - users collection          |  |   |  | - Raw & Compressed Evidence Photos  |  |
-|  | - categories collection     |  |   |  | - Dynamic Thumbnail Generation      |  |
-|  | - complaints collection     |  |   |  | - HTTPS CDN URL Delivery            |  |
-|  | - notifications collection  |  |   |  +-------------------------------------+  |
-|  | - Compound Performance B-Trees| |   +-------------------------------------------+
+|  | - categories collection     |  |   |  | - Dedicated persistent volume       |  |
+|  | - complaints collection     |  |   |  | - High-throughput HTTP URL delivery |  |
+|  | - notifications collection  |  |   |  | - Web management via Mongo Express  |  |
+|  | - Indexed B-Trees on volume |  |   |  +-------------------------------------+  |
+|  +-----------------------------+  |   +-------------------------------------------+
+|  +-----------------------------+  |
+|  |  Mongo Express UI (8081)    |  |
 |  +-----------------------------+  |
 +-----------------------------------+
 ```
@@ -82,8 +85,8 @@ The **CampusVoice** platform implements a distributed, three-tier client-server 
 | **Mobile Client** | **Flutter / Dart** | React Native, Native Kotlin/Java | *Flutter* compiles directly to native ARM machine code without a JavaScript bridge (unlike React Native), ensuring 60fps animations. Flutter's widget tree guarantees identical rendering across heterogeneous Android versions (Android 8 through 14+), eliminating OEM layout fragmentation. |
 | **Client State** | **Provider (`ChangeNotifier`)** | Riverpod, BLoC, Redux | *Provider* is Google's officially recommended pragmatic state management pattern for medium-scale apps. It enforces unidirectional data flow with minimal boilerplate compared to BLoC's complex event/state streams, fitting perfectly within the 25-day delivery roadmap. |
 | **Server Framework** | **Node.js + Express.js** | Spring Boot, Django, FastAPI | *Node.js* utilizes an asynchronous, non-blocking single-threaded event loop that excels at I/O-heavy workloads (handling concurrent image uploads and JSON REST requests). Express provides lightweight modular routing, native JSON handling, and seamless NPM middleware integration. |
-| **Primary Database** | **MongoDB Atlas + Mongoose** | PostgreSQL, MySQL | *MongoDB* is a document-oriented NoSQL database. Grievance records are inherently hierarchical and non-uniform: varying photo arrays, chronological embedded remarks, polymorphic feedback, and dynamic category assignments. Storing these as rich BSON documents avoids expensive multi-table relational joins, allowing $O(1)$ single-query document retrieval. |
-| **Asset Storage** | **Cloudinary Media Cloud** | AWS S3, Local Disk Storage | Storing media files on the application server disk causes severe disk bloat and breaks when containerized or hosted on ephemeral platforms (like Render). *Cloudinary* provides automated streaming uploads, image compression, format optimization (WebP delivery), and global CDN delivery without server memory overhead. |
+| **Primary Database** | **MongoDB Container (v7.0) + Mongoose** | PostgreSQL, MySQL, Cloud Atlas | *MongoDB* is a document-oriented NoSQL database. Grievance records are inherently hierarchical and non-uniform: varying photo arrays, chronological embedded remarks, polymorphic feedback, and dynamic category assignments. Storing these as rich BSON documents avoids expensive multi-table relational joins, allowing $O(1)$ single-query document retrieval. Containerization via Docker provides reproducible local execution with zero cloud dependency. |
+| **Asset Storage** | **Docker Nginx Media Server / Local Storage** | Cloudinary CDN, AWS S3 | Dedicated containerized media server using Nginx (`campusvoice-media-server`) with isolated persistent volume. Eliminates external cloud quotas, API latency, and network dependencies during development and offline evaluation while serving evidence photos with HTTP caching and CORS headers. |
 | **Task Scheduler** | **node-cron** | BullMQ + Redis, Celery | For a single-institution deployment, provisioning a separate Redis instance for message queues adds operational complexity. *node-cron* executes lightweight scheduled tasks in-process with minimal memory footprint. |
 
 ---

@@ -46,3 +46,20 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+
+# Node / Backend
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Docker / Local persistence
+.docker-data/
+mongo_data/
+minio_data/
+

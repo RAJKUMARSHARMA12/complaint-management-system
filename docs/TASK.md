@@ -16,19 +16,20 @@
 
 ## 📅 Phase 1: Inception, Environment Setup & Domain Modeling (Days 1–2)
 
-### Day 1: Cloud Provisioning, Local Tooling & Project Skeleton
-* **Primary Objective:** Establish development environments, cloud database, cloud storage, and source control.
+### Day 1: Container Infrastructure Provisioning, Local Tooling & Project Skeleton
+* **Primary Objective:** Establish development environments, containerized database, containerized media storage, and source control.
 * **Tasks:**
-  - [ ] **[S]** Initialize private Git repository: `git init` and configure `.gitignore` (ignoring `.env`, `node_modules`, `build/`, `.idea/`).
-  - [ ] **[S]** Install Node.js LTS (v18/v20), Flutter SDK (v3.16+), Android Studio, and Postman.
-  - [ ] **[S]** Provision free MongoDB Atlas M0 cluster (`college_cms`), create secure database user, and configure IP whitelist (`0.0.0.0/0` for development).
-  - [ ] **[S]** Provision free Cloudinary account; record `CLOUD_NAME`, `API_KEY`, and `API_SECRET`.
-  - [ ] **[D]** Review and finalize [`docs/PRD.md`](file:///Users/raj/StudioProjects/major_project/docs/PRD.md) and [`docs/ARCHITECTURE.md`](file:///Users/raj/StudioProjects/major_project/docs/ARCHITECTURE.md).
-  - [ ] **[F]** Review Dart 3.x fundamentals: asynchronous programming (`async`/`await`), Streams, and Flutter widget lifecycles.
+  - [x] **[S]** Initialize Git repository and configure `.gitignore` (ignoring `.env`, `node_modules`, `build/`, `.idea/`, and `.docker-data/`).
+  - [x] **[S]** Verify local developer toolchain: Node.js LTS (v24.14.0), Flutter SDK (v3.47.9 / Dart 3.13.7), Android Studio (SDK 36.0.0), and Docker Desktop (v29.7.2).
+  - [x] **[S]** Provision Docker MongoDB container (`mongo:7.0`, `campusvoice-mongodb`) with persistent volume, `college_cms` database, secure authentication credentials, initialization script (`docker/mongo-init.js`), and Mongo Express web dashboard (`campusvoice-mongo-express`, port 8081).
+  - [x] **[S]** Provision Docker media server container (`nginx:alpine`, `campusvoice-media-server`) on port 8080 with persistent volume (`media_data`) for evidence photo storage, CORS headers, and local HTTP delivery in place of Cloudinary.
+  - [x] **[D]** Review and finalize [`docs/PRD.md`](file:///Users/raj/StudioProjects/major_project/docs/PRD.md) and [`docs/ARCHITECTURE.md`](file:///Users/raj/StudioProjects/major_project/docs/ARCHITECTURE.md) to reflect containerized infrastructure topology.
+  - [x] **[F]** Review Dart 3.x fundamentals: asynchronous programming (`async`/`await`), Streams, and Flutter widget lifecycles.
 * **Verification & Testing:**
-  - Run `flutter doctor -v` ensuring zero blocking issues with Android SDK and toolchains.
-  - Test MongoDB connection string using MongoDB Compass.
-* **Deliverable:** Working repository pushed to GitHub with verified cloud credentials.
+  - [x] Run `flutter doctor -v` ensuring zero blocking issues with Android SDK and toolchains.
+  - [x] Test MongoDB container connection string (`mongodb://admin:password123@localhost:27017/college_cms?authSource=admin`) and database state.
+  - [x] Test container HTTP health checks (`http://localhost:8080/health` and `http://localhost:8081`).
+* **Deliverable:** Working repository skeleton with Docker Compose infrastructure (`docker-compose.yml`), `.env` / `.env.example`, and verified local container services.
 
 ---
 
