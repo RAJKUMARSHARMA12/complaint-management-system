@@ -47,6 +47,8 @@ app.get('/api/health', (req, res) => {
 
 // Mount Routes
 app.use('/api/auth', require('./routes/auth.routes'));
+app.use('/api/categories', require('./routes/category.routes'));
+app.use('/api/complaints', require('./routes/complaint.routes'));
 
 // Catch-all for undefined routes
 app.use((req, res) => {

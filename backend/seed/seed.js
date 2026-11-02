@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const User = require('../models/User');
+const Category = require('../models/Category');
+const Complaint = require('../models/Complaint');
+const Counter = require('../models/Counter');
 
 dotenv.config();
 
@@ -87,23 +90,79 @@ const users = [
 
 const seedData = async () => {
   try {
-    const connStr = process.env.MONGO_URI || 'mongodb://admin:password123@localhost:27017/college_cms?authSource=admin';
+    const connStr =
+      process.env.MONGO_URI ||
+      'mongodb://admin:password123@localhost:27017/college_cms?authSource=admin';
     await mongoose.connect(connStr);
     console.log(`[Seeder] Connected to MongoDB at ${connStr}`);
 
-    // Clear existing users
+    // Clear existing collections
     await User.deleteMany({});
-    console.log('[Seeder] Cleared existing users collection.');
+    await Category.deleteMany({});
+    await Complaint.deleteMany({});
+    await Counter.deleteMany({});
+    console.log('[Seeder] Cleared collections (users, categories, complaints, counters).');
 
     // Create users individually so pre('save') bcrypt hashing fires
+    const createdUsers = {};
     for (const userData of users) {
-      await User.create(userData);
-      console.log(`[Seeder] Created ${userData.role}: ${userData.email}`);
+      const u = await User.create(userData);
+      createdUsers[u.email] = u;
+      console.log(`[Seeder] Created ${u.role}: ${u.email}`);
+    }
+
+    // Pre-populate campus categories
+    const categories = [
+      {
+        name: 'Hostel Maintenance',
+        description: 'Plumbing, carpentry, and room infrastructure issues in hostel blocks',
+        defaultAuthority: createdUsers['warden.hostel@college.edu']._id,
+        slaDays: 2,
+        icon: 'hotel',
+        isActive: true
+      },
+      {
+        name: 'Mess & Food Services',
+        description: 'Meal quality, drinking water, cafeteria hygiene, and cutlery sanitation',
+        defaultAuthority: createdUsers['mess.manager@college.edu']._id,
+        slaDays: 1,
+        icon: 'restaurant',
+        isActive: true
+      },
+      {
+        name: 'Computer & Lab Equipment',
+        description: 'Hardware defects, lab PCs, internet access, software licenses, projectors',
+        defaultAuthority: createdUsers['lab.incharge@college.edu']._id,
+        slaDays: 3,
+        icon: 'computer',
+        isActive: true
+      },
+      {
+        name: 'Electrical & Power Supply',
+        description: 'Power outages, tube lights, ceiling fans, ACs, switchboards, wiring',
+        defaultAuthority: createdUsers['electrician@college.edu']._id,
+        slaDays: 1,
+        icon: 'bolt',
+        isActive: true
+      },
+      {
+        name: 'Sanitation & Campus Cleanliness',
+        description: 'Corridor cleanliness, washroom sanitation, dustbins, campus gardens',
+        defaultAuthority: null, // Unassigned for testing manual delegation
+        slaDays: 2,
+        icon: 'cleaning_services',
+        isActive: true
+      }
+    ];
+
+    for (const catData of categories) {
+      await Category.create(catData);
+      console.log(`[Seeder] Created category: ${catData.name} (SLA: ${catData.slaDays} days)`);
     }
 
     console.log('\n=============================================');
     console.log('[Seeder] Database seeding completed successfully!');
-    console.log(`[Seeder] Seeded: 1 Admin, 4 Authorities, 3 Students (${users.length} total users).`);
+    console.log(`[Seeder] Seeded: 8 Users, 5 Categories.`);
     console.log('=============================================\n');
 
     process.exit(0);

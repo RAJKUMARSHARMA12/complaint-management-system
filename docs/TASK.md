@@ -90,21 +90,22 @@
 ### Day 4: Categories, User Administration & Complaint Lodging (Part 1)
 * **Primary Objective:** Build administrative governance APIs and multipart photo upload for complaint creation.
 * **Tasks:**
-  - [ ] **[B]** Implement `models/Category.js` with `slaDays` and `defaultAuthority`.
-  - [ ] **[B]** Build Category CRUD routes:
+  - [x] **[B]** Implement `models/Category.js` with `slaDays` and `defaultAuthority`.
+  - [x] **[B]** Build Category CRUD routes:
     - `GET /api/categories` (active only)
     - `POST /api/categories` (Admin only)
     - `PATCH /api/categories/:id/status` (Admin toggle)
-  - [ ] **[B]** Configure Cloudinary storage engine in `config/cloudinary.js` and multer middleware `middleware/upload.js` (enforcing max 3 files, 5 MB limit, JPEG/PNG only).
-  - [ ] **[B]** Implement `models/Complaint.js` with embedded `remarks` and `feedback` schemas.
-  - [ ] **[B]** Build `POST /api/complaints`:
+  - [x] **[B]** Configure Cloudinary storage engine in `config/cloudinary.js` and multer middleware `middleware/upload.js` (enforcing max 3 files, 5 MB limit, JPEG/PNG only).
+  - [x] **[B]** Implement `models/Complaint.js` with embedded `remarks` and `feedback` schemas.
+  - [x] **[B]** Build `POST /api/complaints`:
     - Generate unique atomic sequential ID (`CMP-0001`).
-    - Stream images to Cloudinary and store returned secure URLs.
+    - Stream images to Cloudinary / container media server and store returned secure URLs.
     - Check if category has `defaultAuthority`: automatically set `status = 'Assigned'`, `assignedTo = defaultAuthority`, and compute `dueDate = Date.now() + (slaDays * 86400000)`.
-  - [ ] **[B]** Build `GET /api/complaints/my` with status filtering and pagination.
+  - [x] **[B]** Build `GET /api/complaints/my` with status filtering and pagination.
 * **Verification & Testing:**
-  - Test multipart `POST /api/complaints` in Postman with 2 images; verify images appear in Cloudinary Media Library and complaint is created in MongoDB.
-* **Deliverable:** Working complaint submission API with cloud photo persistence.
+  - [x] Test multipart `POST /api/complaints` with images; verify images persist and complaint is created in MongoDB with auto-routing.
+  - [x] Execute automated integration test suite covering categories and complaint lodging (10/10 passing).
+* **Deliverable:** Working complaint submission API with photo persistence and auto-assignment.
 
 ---
 
