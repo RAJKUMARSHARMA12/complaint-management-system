@@ -3,6 +3,7 @@ const Complaint = require('../models/Complaint');
 const Category = require('../models/Category');
 const Counter = require('../models/Counter');
 const User = require('../models/User');
+const { createNotification } = require('../utils/notify');
 
 // Atomic sequential ID generator helper (e.g. CMP-0001, CMP-0002)
 const getNextComplaintId = async () => {
@@ -128,6 +129,18 @@ const createComplaint = async (req, res, next) => {
         }
       ]
     });
+
+    // Notification Hook: If complaint was auto-assigned upon creation
+    if (assignedTo) {
+      await createNotification({
+        recipient: assignedTo,
+        sender: req.user._id,
+        title: 'New Complaint Assigned',
+        message: `New ticket [${complaint.complaintId}] in '${categoryDoc.name}' assigned to your queue.`,
+        type: 'ASSIGNMENT',
+        relatedComplaint: complaint._id
+      });
+    }
 
     return res.status(201).json({
       success: true,
@@ -563,6 +576,26 @@ const assignComplaint = async (req, res, next) => {
 
     await complaint.save();
 
+    // Notification Hook: Alert newly assigned authority
+    await createNotification({
+      recipient: authorityUser._id,
+      sender: req.user._id,
+      title: 'Ticket Assigned to You',
+      message: `Admin assigned complaint [${complaint.complaintId}] (${complaint.title}) to your department.`,
+      type: 'ASSIGNMENT',
+      relatedComplaint: complaint._id
+    });
+
+    // Also notify original student of the assignment
+    await createNotification({
+      recipient: complaint.createdBy,
+      sender: req.user._id,
+      title: 'Complaint Assigned',
+      message: `Your complaint [${complaint.complaintId}] has been assigned to ${authorityUser.name}.`,
+      type: 'ASSIGNMENT',
+      relatedComplaint: complaint._id
+    });
+
     return res.status(200).json({
       success: true,
       message: 'Complaint assigned successfully',
@@ -657,6 +690,16 @@ const updateComplaintStatus = async (req, res, next) => {
 
     await complaint.save();
 
+    // Notification Hook: Alert student of status update
+    await createNotification({
+      recipient: complaint.createdBy,
+      sender: req.user._id,
+      title: 'Status Updated',
+      message: `Your complaint [${complaint.complaintId}] status has been updated to '${nextStatus}'.`,
+      type: 'STATUS_CHANGE',
+      relatedComplaint: complaint._id
+    });
+
     return res.status(200).json({
       success: true,
       message: 'Status updated successfully',
@@ -734,6 +777,27 @@ const addRemark = async (req, res, next) => {
     complaint.remarks.push(newRemark);
     await complaint.save();
 
+    // Notification Hook: Notify counter-party
+    // If student posted remark -> notify assigned authority
+    // If authority posted remark -> notify student creator
+    let notifyRecipient = null;
+    if (req.user.role === 'student' && complaint.assignedTo) {
+      notifyRecipient = complaint.assignedTo;
+    } else if (req.user.role === 'authority') {
+      notifyRecipient = complaint.createdBy;
+    }
+
+    if (notifyRecipient) {
+      await createNotification({
+        recipient: notifyRecipient,
+        sender: req.user._id,
+        title: 'New Remark Added',
+        message: `New note on [${complaint.complaintId}]: "${text.trim().substring(0, 60)}${text.length > 60 ? '...' : ''}"`,
+        type: 'REMARK',
+        relatedComplaint: complaint._id
+      });
+    }
+
     return res.status(201).json({
       success: true,
       message: 'Remark added successfully',
@@ -751,6 +815,105 @@ const addRemark = async (req, res, next) => {
   }
 };
 
+// @desc    Submit feedback and formal closure for resolved complaint
+// @route   POST /api/complaints/:id/feedback
+// @access  Protected (Original student owner only)
+const submitFeedback = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array().map((err) => ({
+          field: err.path || err.param,
+          message: err.msg
+        }))
+      });
+    }
+
+    const { id } = req.params;
+    const { rating, comment } = req.body;
+
+    const complaint = await Complaint.findById(id);
+    if (!complaint) {
+      return res.status(404).json({
+        success: false,
+        message: `Complaint not found with id: ${id}`
+      });
+    }
+
+    // Constraint 1: Requester must be original creator
+    if (complaint.createdBy.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: 'Forbidden: Only the original student who lodged this complaint can submit feedback.'
+      });
+    }
+
+    // Constraint 2: Status must currently be strictly 'Resolved'
+    if (complaint.status !== 'Resolved') {
+      return res.status(400).json({
+        success: false,
+        message: `Feedback can only be submitted for complaints in 'Resolved' status. Current status: '${complaint.status}'.`
+      });
+    }
+
+    // Constraint 3: Single feedback submission
+    if (complaint.feedback && complaint.feedback.rating) {
+      return res.status(400).json({
+        success: false,
+        message: 'Feedback has already been submitted for this complaint.'
+      });
+    }
+
+    // Save feedback and transition to terminal Closed state
+    complaint.feedback = {
+      rating: Number(rating),
+      comment: comment ? comment.trim() : '',
+      submittedAt: new Date()
+    };
+    complaint.status = 'Closed';
+    complaint.closedAt = new Date();
+
+    complaint.remarks.push({
+      user: req.user._id,
+      role: req.user.role,
+      text: `Complaint closed by student with ${rating}-star rating.${
+        comment ? ` Review: "${comment.trim()}"` : ''
+      }`
+    });
+
+    await complaint.save();
+
+    // Notification Hook: Alert assigned authority of completion rating
+    if (complaint.assignedTo) {
+      await createNotification({
+        recipient: complaint.assignedTo,
+        sender: req.user._id,
+        title: 'Feedback Received',
+        message: `Student verified resolution for [${complaint.complaintId}] with a ${rating}-star rating. Ticket is now Closed.`,
+        type: 'FEEDBACK',
+        relatedComplaint: complaint._id
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Feedback submitted; complaint marked as Closed',
+      data: {
+        id: complaint._id,
+        complaintId: complaint.complaintId,
+        status: complaint.status,
+        closedAt: complaint.closedAt,
+        feedback: complaint.feedback
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createComplaint,
   getMyComplaints,
@@ -759,5 +922,6 @@ module.exports = {
   getComplaintById,
   assignComplaint,
   updateComplaintStatus,
-  addRemark
+  addRemark,
+  submitFeedback
 };

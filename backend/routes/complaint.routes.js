@@ -8,7 +8,8 @@ const {
   getComplaintById,
   assignComplaint,
   updateComplaintStatus,
-  addRemark
+  addRemark,
+  submitFeedback
 } = require('../controllers/complaint.controller');
 const { protect } = require('../middleware/auth');
 const { authorize } = require('../middleware/role');
@@ -101,5 +102,25 @@ router.patch(
 
 // Threaded collaborative remarks
 router.post('/:id/remarks', protect, remarkValidation, addRemark);
+
+// Student feedback & terminal closure
+router.post(
+  '/:id/feedback',
+  protect,
+  authorize('student'),
+  [
+    body('rating')
+      .notEmpty()
+      .withMessage('Rating is required')
+      .isInt({ min: 1, max: 5 })
+      .withMessage('Rating must be an integer between 1 and 5'),
+    body('comment')
+      .optional()
+      .trim()
+      .isLength({ max: 300 })
+      .withMessage('Comment cannot exceed 300 characters')
+  ],
+  submitFeedback
+);
 
 module.exports = router;

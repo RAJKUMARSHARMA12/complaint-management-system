@@ -137,19 +137,19 @@
 ### Day 6: Feedback Loop, Notification Subsystem & Error Hardening
 * **Primary Objective:** Complete the resolution verification cycle and centralize error handling.
 * **Tasks:**
-  - [ ] **[B]** Implement `POST /api/complaints/:id/feedback`:
+  - [x] **[B]** Implement `POST /api/complaints/:id/feedback`:
     - Verify requester is original owner.
     - Verify status is currently `Resolved`.
     - Save 1–5 star rating and comments.
     - Transition status to terminal state `Closed` and set `closedAt`.
-  - [ ] **[B]** Implement `models/Notification.js` and notification helper `utils/notify.js`.
-  - [ ] **[B]** Hook notification triggers into: Assignment, Status change, Remark added, Feedback received.
-  - [ ] **[B]** Implement notification routes: `GET /api/notifications` and `PATCH /api/notifications/read-all`.
-  - [ ] **[B]** Build centralized error handling middleware `middleware/error.js`.
-  - [ ] **[T]** Export complete Postman Collection v2.1 with pre-request scripts into `backend/tests/CampusVoice.postman_collection.json`.
-  - [ ] **[D]** Generate Entity-Relationship (ER) Diagram artifact.
+  - [x] **[B]** Implement `models/Notification.js` and notification helper `utils/notify.js`.
+  - [x] **[B]** Hook notification triggers into: Assignment, Status change, Remark added, Feedback received.
+  - [x] **[B]** Implement notification routes: `GET /api/notifications` and `PATCH /api/notifications/read-all`.
+  - [x] **[B]** Build centralized error handling middleware `middleware/error.js`.
+  - [x] **[T]** Export complete Postman Collection v2.1 with pre-request scripts into `backend/tests/CampusVoice.postman_collection.json`.
+  - [x] **[D]** Generate Entity-Relationship (ER) Diagram artifact ([`docs/ER_DIAGRAM.md`](file:///Users/raj/StudioProjects/major_project/docs/ER_DIAGRAM.md)).
 * **Verification & Testing:**
-  - Run the entire Postman collection end-to-end (Register $\rightarrow$ Lodge $\rightarrow$ Assign $\rightarrow$ Resolve $\rightarrow$ Feedback $\rightarrow$ Closed).
+  - [x] Run the entire test collection end-to-end (Register $\rightarrow$ Lodge $\rightarrow$ Assign $\rightarrow$ Resolve $\rightarrow$ Feedback $\rightarrow$ Closed) with 100% test pass (56/56 total assertions).
 * **Deliverable:** 100% completed, tested, and documented backend REST API.
 
 ---
