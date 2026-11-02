@@ -184,13 +184,13 @@
 ### Day 8: New Complaint Form & Cloudinary Image Upload
 * **Primary Objective:** Implement the complaint lodging interface with camera/gallery image picker.
 * **Tasks:**
-  - [ ] **[F]** Implement `CategoryService` and load active categories into `ComplaintProvider`.
-  - [ ] **[F]** Build `NewComplaintScreen`:
+  - [x] **[F]** Implement `CategoryService` and load active categories into `ComplaintProvider`.
+  - [x] **[F]** Build `NewComplaintScreen`:
     - Form fields for Title, Description, Location, and Priority segmented control.
     - Dynamic Category dropdown populated from API.
     - Anonymous whistleblower toggle switch with informational card.
     - Image attachment row: tap to launch `image_picker` (Camera or Gallery), thumbnail preview carousel, and delete icon.
-  - [ ] **[F]** Implement multipart network submission with modal progress dialog and user-friendly error banners.
+  - [x] **[F]** Implement multipart network submission with modal progress dialog and user-friendly error banners.
 * **Verification & Testing:**
   - Take a photo on the emulator camera, submit a complaint, and confirm receipt in the backend console.
 * **Deliverable:** End-to-end complaint lodging from mobile app to Cloudinary & MongoDB.

@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:major_project/core/network/api_client.dart';
 import 'package:major_project/core/storage/secure_storage_service.dart';
+import 'package:major_project/services/category_service.dart';
 import 'package:major_project/providers/auth_provider.dart';
+import 'package:major_project/providers/complaint_provider.dart';
 import 'package:major_project/screens/login_screen.dart';
 import 'package:major_project/screens/register_screen.dart';
 import 'package:major_project/screens/splash_screen.dart';
+import 'package:major_project/screens/new_complaint_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,12 +33,20 @@ class MyApp extends StatelessWidget {
           storageService: effectiveStorage,
         );
 
+    final effectiveCategoryService = CategoryService(apiClient: effectiveApiClient);
+
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<AuthProvider>(
           create: (_) => AuthProvider(
             apiClient: effectiveApiClient,
             storageService: effectiveStorage,
+          ),
+        ),
+        ChangeNotifierProvider<ComplaintProvider>(
+          create: (_) => ComplaintProvider(
+            apiClient: effectiveApiClient,
+            categoryService: effectiveCategoryService,
           ),
         ),
       ],
@@ -72,6 +83,7 @@ class MyApp extends StatelessWidget {
           '/login': (context) => const LoginScreen(),
           '/register': (context) => const RegisterScreen(),
           '/home': (context) => const HomeScreenPlaceholder(),
+          '/new-complaint': (context) => const NewComplaintScreen(),
         },
       ),
     );
@@ -138,7 +150,7 @@ class HomeScreenPlaceholder extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
-                    'Campus Grievance & Redressal System\nDay 7 Authentication & Architecture Verified',
+                    'Campus Grievance & Redressal System\nTap below to lodge a new complaint',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
@@ -147,6 +159,14 @@ class HomeScreenPlaceholder extends StatelessWidget {
             ],
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        key: const Key('new_complaint_fab'),
+        onPressed: () {
+          Navigator.pushNamed(context, '/new-complaint');
+        },
+        icon: const Icon(Icons.add),
+        label: const Text('Raise Complaint'),
       ),
     );
   }

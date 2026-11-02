@@ -16,7 +16,11 @@ class AuthInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
-    options.headers['Content-Type'] ??= 'application/json';
+    if (options.data is FormData) {
+      options.headers.remove('Content-Type');
+    } else {
+      options.headers['Content-Type'] ??= 'application/json';
+    }
 
     try {
       final token = await storageService.getToken();
@@ -54,7 +58,6 @@ class ApiClient {
     dio.options.baseUrl = baseUrl ?? defaultBaseUrl;
     dio.options.connectTimeout = const Duration(seconds: 15);
     dio.options.receiveTimeout = const Duration(seconds: 15);
-    dio.options.headers['Content-Type'] = 'application/json';
 
     dio.interceptors.add(
       AuthInterceptor(
