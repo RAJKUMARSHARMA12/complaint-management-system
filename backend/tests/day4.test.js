@@ -162,12 +162,13 @@ const runDay4Tests = async () => {
       (c) => c.name === 'Sanitation & Campus Cleanliness'
     );
 
-    // Test 2: Admin creates new category
+    // Test 2: Admin creates new category (unique name per run)
+    const testCategoryName = `Sports & Gymnasium ${Date.now()}`;
     const createCatRes = await jsonRequest(
       'POST',
       '/api/categories',
       {
-        name: 'Sports & Gymnasium',
+        name: testCategoryName,
         description: 'Gym equipment, badminton court, sports gear',
         slaDays: 4,
         icon: 'sports_tennis'
@@ -177,7 +178,7 @@ const runDay4Tests = async () => {
     assert(
       createCatRes.status === 201 &&
         createCatRes.body.success === true &&
-        createCatRes.body.data.name === 'Sports & Gymnasium' &&
+        createCatRes.body.data.name === testCategoryName &&
         createCatRes.body.data.slaDays === 4,
       'POST /api/categories creates new category (Admin only)'
     );
