@@ -34,6 +34,7 @@ class AuthProvider extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
 
+    debugPrint('[Auth] calling ${apiClient.dio.options.baseUrl}/auth/login');
     try {
       final response = await apiClient.post(
         '/auth/login',
@@ -42,10 +43,15 @@ class AuthProvider extends ChangeNotifier {
           'password': password,
         },
       );
+      debugPrint('[Auth] login response received: ${response.statusCode}');
 
-      final data = response.data as Map<String, dynamic>;
-      final token = data['token'] as String;
-      final userData = data['user'] as Map<String, dynamic>;
+      final resData = response.data as Map<String, dynamic>;
+      final nestedData = resData['data'] is Map<String, dynamic>
+          ? resData['data'] as Map<String, dynamic>
+          : resData;
+
+      final token = (nestedData['token'] ?? resData['token']) as String;
+      final userData = (nestedData['user'] ?? resData['user']) as Map<String, dynamic>;
 
       _token = token;
       _user = UserModel.fromJson(userData);
@@ -57,6 +63,7 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
       return true;
     } on DioException catch (e) {
+      debugPrint('[Auth] DioException data: ${e.response?.data}');
       _isLoading = false;
       if (e.response?.data is Map && e.response!.data['message'] != null) {
         _errorMessage = e.response!.data['message'].toString();
@@ -66,6 +73,7 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
       return false;
     } catch (e) {
+      debugPrint('[Auth] Catch error: $e');
       _isLoading = false;
       _errorMessage = e.toString();
       notifyListeners();
@@ -99,9 +107,13 @@ class AuthProvider extends ChangeNotifier {
         data: payload,
       );
 
-      final data = response.data as Map<String, dynamic>;
-      final token = data['token'] as String;
-      final userData = data['user'] as Map<String, dynamic>;
+      final resData = response.data as Map<String, dynamic>;
+      final nestedData = resData['data'] is Map<String, dynamic>
+          ? resData['data'] as Map<String, dynamic>
+          : resData;
+
+      final token = (nestedData['token'] ?? resData['token']) as String;
+      final userData = (nestedData['user'] ?? resData['user']) as Map<String, dynamic>;
 
       _token = token;
       _user = UserModel.fromJson(userData);
@@ -143,9 +155,12 @@ class AuthProvider extends ChangeNotifier {
 
     try {
       final response = await apiClient.get('/auth/me');
-      final data = response.data as Map<String, dynamic>;
-      if (data['user'] != null) {
-        final userData = data['user'] as Map<String, dynamic>;
+      final resData = response.data as Map<String, dynamic>;
+      final userData = resData['data'] is Map<String, dynamic>
+          ? resData['data'] as Map<String, dynamic>
+          : (resData['user'] as Map<String, dynamic>?);
+
+      if (userData != null) {
         _user = UserModel.fromJson(userData);
         await storageService.saveUserData(userData);
       }

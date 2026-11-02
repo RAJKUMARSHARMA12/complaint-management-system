@@ -23,7 +23,12 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _submitLogin() async {
-    if (!_formKey.currentState!.validate()) return;
+    debugPrint('[Login] _submitLogin triggered, validating form...');
+    if (!_formKey.currentState!.validate()) {
+      debugPrint('[Login] Form validation failed!');
+      return;
+    }
+    debugPrint('[Login] Form valid, email: ${_emailController.text}, password length: ${_passwordController.text.length}');
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final success = await authProvider.login(
