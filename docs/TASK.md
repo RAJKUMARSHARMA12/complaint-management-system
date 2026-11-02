@@ -112,23 +112,24 @@
 ### Day 5: Complaint Workflow, Whistleblower Masking & Remarks (Part 2)
 * **Primary Objective:** Enforce the finite state machine, anonymous privacy masking, and collaborative timeline remarks.
 * **Tasks:**
-  - [ ] **[B]** Build `GET /api/complaints/assigned` for authorities.
-  - [ ] **[B]** Build `GET /api/complaints` (Admin master view with multi-parameter search).
-  - [ ] **[B]** Build `GET /api/complaints/:id` with anonymous privacy scrubber:
+  - [x] **[B]** Build `GET /api/complaints/assigned` for authorities.
+  - [x] **[B]** Build `GET /api/complaints` (Admin master view with multi-parameter search).
+  - [x] **[B]** Build `GET /api/complaints/:id` with anonymous privacy scrubber:
     ```javascript
     if (complaint.isAnonymous && req.user.role !== 'student') {
       complaint.createdBy = { name: "Anonymous Student" };
     }
     ```
-  - [ ] **[B]** Implement `PATCH /api/complaints/:id/assign` (Admin delegation).
-  - [ ] **[B]** Implement `PATCH /api/complaints/:id/status` with strict state machine validation:
+  - [x] **[B]** Implement `PATCH /api/complaints/:id/assign` (Admin delegation).
+  - [x] **[B]** Implement `PATCH /api/complaints/:id/status` with strict state machine validation:
     - Enforce `STATUS_TRANSITIONS` mapping.
     - Require mandatory action remark when marking `Resolved`.
     - Record `resolvedAt` timestamp.
-  - [ ] **[B]** Implement `POST /api/complaints/:id/remarks` allowing threaded communication.
+  - [x] **[B]** Implement `POST /api/complaints/:id/remarks` allowing threaded communication.
 * **Verification & Testing:**
-  - Verify that an invalid jump from `Submitted` to `Resolved` returns `400 Bad Request`.
-  - Verify that retrieving an anonymous complaint as an Authority returns `name: "Anonymous Student"` with zero email/phone exposure.
+  - [x] Verify that an invalid jump from `Submitted` to `Resolved` returns `400 Bad Request`.
+  - [x] Verify that retrieving an anonymous complaint as an Authority returns `name: "Anonymous Student"` with zero email/phone exposure.
+  - [x] Execute automated integration test suite covering Day 5 workflow (14/14 passing).
 * **Deliverable:** Robust workflow state engine adhering strictly to PRD specifications.
 
 ---

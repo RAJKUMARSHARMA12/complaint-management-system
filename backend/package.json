@@ -7,7 +7,7 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "seed": "node seed/seed.js",
-    "test": "node tests/auth.test.js && node tests/day4.test.js"
+    "test": "node tests/auth.test.js && node tests/day4.test.js && node tests/day5.test.js"
   },
   "keywords": [],
   "author": "",
