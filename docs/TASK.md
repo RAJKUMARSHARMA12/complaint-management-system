@@ -62,27 +62,27 @@
 ### Day 3: Server Framework, Database Connection & Authentication Engine
 * **Primary Objective:** Build the Express REST server foundation, connect to MongoDB, and implement secure JWT authentication.
 * **Tasks:**
-  - [ ] **[B]** Initialize Node.js backend:
+  - [x] **[B]** Initialize Node.js backend:
     ```bash
     mkdir backend && cd backend && npm init -y
     npm install express mongoose dotenv bcryptjs jsonwebtoken cors helmet express-validator multer cloudinary multer-storage-cloudinary node-cron
     npm install --save-dev nodemon
     ```
-  - [ ] **[B]** Create backend modular structure (`config/`, `models/`, `controllers/`, `routes/`, `middleware/`, `utils/`, `jobs/`).
-  - [ ] **[B]** Configure Mongoose connection in `config/db.js` with auto-reconnect logic.
-  - [ ] **[B]** Implement `models/User.js` with bcrypt salted password hashing middleware.
-  - [ ] **[B]** Implement `controllers/auth.controller.js` and `routes/auth.routes.js`:
+  - [x] **[B]** Create backend modular structure (`config/`, `models/`, `controllers/`, `routes/`, `middleware/`, `utils/`, `jobs/`).
+  - [x] **[B]** Configure Mongoose connection in `config/db.js` with auto-reconnect logic.
+  - [x] **[B]** Implement `models/User.js` with bcrypt salted password hashing middleware.
+  - [x] **[B]** Implement `controllers/auth.controller.js` and `routes/auth.routes.js`:
     - `POST /api/auth/register` (strictly sets `role: 'student'`)
     - `POST /api/auth/login` (verifies password, checks `isActive`, returns signed 7-day JWT)
     - `GET /api/auth/me` (decodes token and returns current user)
-  - [ ] **[B]** Implement security middleware: `middleware/auth.js` (JWT verification) and `middleware/role.js` (Role-Based Access Control).
-  - [ ] **[B]** Create database seeder script `seed/seed.js` pre-populating:
+  - [x] **[B]** Implement security middleware: `middleware/auth.js` (JWT verification) and `middleware/role.js` (Role-Based Access Control).
+  - [x] **[B]** Create database seeder script `seed/seed.js` pre-populating:
     - 1 Super Admin (`admin@college.edu`)
     - 4 Authorities (Hostel Warden, Mess Manager, Lab In-charge, Electrician)
     - 3 Students
 * **Verification & Testing:**
-  - Execute `npm run seed` and verify documents in MongoDB Atlas Compass.
-  - Execute Postman tests for registration, valid login, invalid password (expect 400), and deactivated user login (expect 403).
+  - [x] Execute `npm run seed` and verify documents in MongoDB container / Mongo Express.
+  - [x] Execute automated tests for registration, valid login, invalid password (expect 400), and deactivated user login (expect 403).
 * **Deliverable:** Fully functional authentication microservice with seeded test accounts.
 
 ---
