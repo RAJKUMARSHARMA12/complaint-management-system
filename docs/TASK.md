@@ -159,7 +159,7 @@
 ### Day 7: Mobile Architecture, Networking & Authentication UI
 * **Primary Objective:** Scaffold the Flutter project, establish the Dio network client, and build login/registration screens.
 * **Tasks:**
-  - [ ] **[F]** Add dependencies to `pubspec.yaml`:
+  - [x] **[F]** Add dependencies to `pubspec.yaml`:
     ```yaml
     dependencies:
       dio: ^5.4.0
@@ -169,14 +169,15 @@
       fl_chart: ^0.66.0
       intl: ^0.19.0
     ```
-  - [ ] **[F]** Implement `core/network/api_client.dart` with automatic Bearer token interceptor and 401 error handler.
-  - [ ] **[F]** Implement `core/storage/secure_storage.dart` for encrypted keystore token persistence.
-  - [ ] **[F]** Implement typed models: `User`, `Complaint`, `Category`, `Notification`.
-  - [ ] **[F]** Build `AuthProvider` managing authentication state, login, registration, and auto-login check.
-  - [ ] **[F]** Build UI: `SplashScreen`, `LoginScreen`, and `RegisterScreen` with input validation.
+  - [x] **[F]** Implement `core/network/api_client.dart` with automatic Bearer token interceptor and 401 error handler.
+  - [x] **[F]** Implement `core/storage/secure_storage_service.dart` for encrypted keystore token persistence.
+  - [x] **[F]** Implement typed models: `User`, `Complaint`, `Category`, `Notification`.
+  - [x] **[F]** Build `AuthProvider` managing authentication state, login, registration, and auto-login check.
+  - [x] **[F]** Build UI: `SplashScreen`, `LoginScreen`, and `RegisterScreen` with input validation.
 * **Verification & Testing:**
   - Verify login with seeded credentials navigates to the appropriate screen and persists token across app restarts.
-* **Deliverable:** Functional authentication flow on Android emulator.
+  - Verified with 27 automated unit, network, provider, and widget tests (`flutter test`) following TDD.
+* **Deliverable:** Functional authentication flow, network layer, secure storage, and UI models.
 
 ---
 
