@@ -196,14 +196,13 @@ class _MyComplaintsScreenState extends State<MyComplaintsScreen> {
                             final complaint = filteredList[index];
                             return ComplaintCard(
                               complaint: complaint,
-                              onTap: () {
-                                // Tapping complaint will open detail in Day 10
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('Selected complaint: ${complaint.complaintId}'),
-                                    duration: const Duration(seconds: 1),
-                                  ),
+                              onTap: () async {
+                                await Navigator.pushNamed(
+                                  context,
+                                  '/complaint-detail',
+                                  arguments: complaint.id,
                                 );
+                                provider.fetchMyComplaints(refresh: true);
                               },
                             );
                           },

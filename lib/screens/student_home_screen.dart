@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:major_project/providers/auth_provider.dart';
 import 'package:major_project/providers/complaint_provider.dart';
+import 'package:major_project/providers/notification_provider.dart';
 import 'package:major_project/widgets/complaint_card.dart';
 
 class StudentHomeScreen extends StatefulWidget {
@@ -19,6 +20,7 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
       final complaintProv = Provider.of<ComplaintProvider>(context, listen: false);
       complaintProv.fetchMyComplaints();
       complaintProv.fetchCategories();
+      Provider.of<NotificationProvider>(context, listen: false).fetchNotifications(silent: true);
     });
   }
 
@@ -27,6 +29,7 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
     final theme = Theme.of(context);
     final authProvider = Provider.of<AuthProvider>(context);
     final complaintProvider = Provider.of<ComplaintProvider>(context);
+    final notifProvider = Provider.of<NotificationProvider>(context);
     final user = authProvider.user;
 
     return Scaffold(
@@ -55,15 +58,29 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_none_rounded),
+            key: const Key('home_notifications_button'),
+            icon: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                const Icon(Icons.notifications_none_rounded),
+                if (notifProvider.hasUnread)
+                  Positioned(
+                    right: -2,
+                    top: -2,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                      constraints: const BoxConstraints(minWidth: 8, minHeight: 8),
+                    ),
+                  ),
+              ],
+            ),
             tooltip: 'Notifications',
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Notifications inbox coming in Day 10'),
-                  duration: Duration(seconds: 1),
-                ),
-              );
+              Navigator.pushNamed(context, '/notifications');
             },
           ),
           IconButton(
@@ -355,8 +372,13 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                     final complaint = complaintProvider.myComplaints[index];
                     return ComplaintCard(
                       complaint: complaint,
-                      onTap: () {
-                        Navigator.pushNamed(context, '/my-complaints');
+                      onTap: () async {
+                        await Navigator.pushNamed(
+                          context,
+                          '/complaint-detail',
+                          arguments: complaint.id,
+                        );
+                        complaintProvider.fetchMyComplaints(refresh: true);
                       },
                     );
                   },

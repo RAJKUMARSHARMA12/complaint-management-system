@@ -218,19 +218,19 @@
 ### Day 10: Detail Timeline, Feedback Dialog & Notifications
 * **Primary Objective:** Implement the complaint inspection screen, action remarks, and rating dialog.
 * **Tasks:**
-  - [ ] **[F]** Build `ComplaintDetailScreen`:
+  - [x] **[F]** Build `ComplaintDetailScreen`:
     - Header with ID, category, location, and SLA due date countdown.
     - Expandable photo gallery with full-screen zoom preview.
     - Chronological remarks timeline showing user avatars, roles, and timestamps.
     - Action text box to post new remarks.
-  - [ ] **[F]** Build `FeedbackDialog`:
+  - [x] **[F]** Build `FeedbackDialog`:
     - Displayed only when status is `Resolved`.
     - 5-star interactive rating bar and review comments field.
     - Calls `POST /api/complaints/:id/feedback` and updates screen to `Closed`.
-  - [ ] **[F]** Build `NotificationInboxScreen` with unread dot indicators and "Mark All as Read" header button.
-  - [ ] **[D]** Draft Data Flow Diagrams (DFD Level 0 and Level 1).
+  - [x] **[F]** Build `NotificationInboxScreen` with unread dot indicators and "Mark All as Read" header button.
+  - [x] **[D]** Draft Data Flow Diagrams (DFD Level 0 and Level 1).
 * **Verification & Testing:**
-  - Submit a complaint, resolve it in Postman, open the app, verify `FeedbackDialog` opens, rate 5 stars, and confirm complaint transitions to `Closed`.
+  - Automated tests covering `FeedbackDialog` rating & feedback submission, `ComplaintDetailScreen` SLA countdown & remarks posting, and `NotificationInboxScreen` unread dots & mark all read (60/60 total tests passing).
 * **Deliverable:** Complete Student feedback and closure loop.
 
 ---

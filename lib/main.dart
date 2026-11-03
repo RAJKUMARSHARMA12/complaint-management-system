@@ -5,12 +5,15 @@ import 'package:major_project/core/storage/secure_storage_service.dart';
 import 'package:major_project/services/category_service.dart';
 import 'package:major_project/providers/auth_provider.dart';
 import 'package:major_project/providers/complaint_provider.dart';
+import 'package:major_project/providers/notification_provider.dart';
 import 'package:major_project/screens/login_screen.dart';
 import 'package:major_project/screens/register_screen.dart';
 import 'package:major_project/screens/splash_screen.dart';
 import 'package:major_project/screens/new_complaint_screen.dart';
 import 'package:major_project/screens/student_home_screen.dart';
 import 'package:major_project/screens/my_complaints_screen.dart';
+import 'package:major_project/screens/notification_inbox_screen.dart';
+import 'package:major_project/screens/complaint_detail_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,6 +54,11 @@ class MyApp extends StatelessWidget {
             categoryService: effectiveCategoryService,
           ),
         ),
+        ChangeNotifierProvider<NotificationProvider>(
+          create: (_) => NotificationProvider(
+            apiClient: effectiveApiClient,
+          ),
+        ),
       ],
       child: MaterialApp(
         title: 'CampusVoice',
@@ -87,6 +95,16 @@ class MyApp extends StatelessWidget {
           '/home': (context) => const StudentHomeScreen(),
           '/my-complaints': (context) => const MyComplaintsScreen(),
           '/new-complaint': (context) => const NewComplaintScreen(),
+          '/notifications': (context) => const NotificationInboxScreen(),
+        },
+        onGenerateRoute: (settings) {
+          if (settings.name == '/complaint-detail') {
+            final complaintId = settings.arguments as String;
+            return MaterialPageRoute(
+              builder: (context) => ComplaintDetailScreen(complaintId: complaintId),
+            );
+          }
+          return null;
         },
       ),
     );

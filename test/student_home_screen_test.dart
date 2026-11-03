@@ -7,6 +7,7 @@ import 'package:major_project/models/complaint_model.dart';
 import 'package:major_project/models/user_model.dart';
 import 'package:major_project/providers/auth_provider.dart';
 import 'package:major_project/providers/complaint_provider.dart';
+import 'package:major_project/providers/notification_provider.dart';
 import 'package:major_project/screens/student_home_screen.dart';
 import 'package:major_project/services/category_service.dart';
 import 'package:provider/provider.dart';
@@ -90,16 +91,25 @@ void main() {
   Widget createTestWidget({
     required AuthProvider authProvider,
     required ComplaintProvider complaintProvider,
+    NotificationProvider? notificationProvider,
   }) {
+    final effectiveNotif = notificationProvider ??
+        NotificationProvider(
+          apiClient: ApiClient(storageService: FakeStorageService()),
+        );
+
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<AuthProvider>.value(value: authProvider),
         ChangeNotifierProvider<ComplaintProvider>.value(value: complaintProvider),
+        ChangeNotifierProvider<NotificationProvider>.value(value: effectiveNotif),
       ],
       child: MaterialApp(
         routes: {
           '/new-complaint': (ctx) => const Scaffold(body: Text('New Complaint Screen')),
           '/my-complaints': (ctx) => const Scaffold(body: Text('My Complaints Screen')),
+          '/notifications': (ctx) => const Scaffold(body: Text('Notifications Screen')),
+          '/complaint-detail': (ctx) => const Scaffold(body: Text('Complaint Detail Screen')),
         },
         home: const StudentHomeScreen(),
       ),
