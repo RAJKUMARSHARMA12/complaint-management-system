@@ -123,7 +123,9 @@ class ComplaintModel {
   final ComplaintFeedback? feedback;
   final String? submittedByName;
   final String? assignedToName;
+  final String? assignedToId;
   final String? department;
+  final bool isEscalated;
   final DateTime? dueDate;
   final DateTime? resolvedAt;
   final DateTime? closedAt;
@@ -148,7 +150,9 @@ class ComplaintModel {
     this.feedback,
     this.submittedByName,
     this.assignedToName,
+    this.assignedToId,
     this.department,
+    this.isEscalated = false,
     this.dueDate,
     this.resolvedAt,
     this.closedAt,
@@ -182,11 +186,14 @@ class ComplaintModel {
     }
 
     String? assignedToName;
+    String? assignedToId;
     if (json['assignedTo'] != null) {
       if (json['assignedTo'] is Map<String, dynamic>) {
         assignedToName = json['assignedTo']['name'];
+        assignedToId = json['assignedTo']['id'] ?? json['assignedTo']['_id'];
       } else {
         assignedToName = json['assignedTo'].toString();
+        assignedToId = json['assignedTo'].toString();
       }
     }
 
@@ -232,7 +239,9 @@ class ComplaintModel {
       feedback: feedback,
       submittedByName: submittedByName,
       assignedToName: assignedToName,
+      assignedToId: assignedToId,
       department: json['department'],
+      isEscalated: json['isEscalated'] ?? false,
       dueDate: json['dueDate'] != null
           ? DateTime.tryParse(json['dueDate'].toString())
           : null,
@@ -269,7 +278,9 @@ class ComplaintModel {
     ComplaintFeedback? feedback,
     String? submittedByName,
     String? assignedToName,
+    String? assignedToId,
     String? department,
+    bool? isEscalated,
     DateTime? dueDate,
     DateTime? resolvedAt,
     DateTime? closedAt,
@@ -294,7 +305,9 @@ class ComplaintModel {
       feedback: feedback ?? this.feedback,
       submittedByName: submittedByName ?? this.submittedByName,
       assignedToName: assignedToName ?? this.assignedToName,
+      assignedToId: assignedToId ?? this.assignedToId,
       department: department ?? this.department,
+      isEscalated: isEscalated ?? this.isEscalated,
       dueDate: dueDate ?? this.dueDate,
       resolvedAt: resolvedAt ?? this.resolvedAt,
       closedAt: closedAt ?? this.closedAt,
@@ -316,6 +329,8 @@ class ComplaintModel {
       'isAnonymous': isAnonymous,
       'images': images,
       'status': status,
+      'isEscalated': isEscalated,
+      if (assignedToName != null) 'assignedTo': {'name': assignedToName, if (assignedToId != null) 'id': assignedToId},
       'statusHistory': statusHistory.map((h) => h.toJson()).toList(),
       'remarks': remarks.map((r) => r.toJson()).toList(),
       if (feedback != null) 'feedback': feedback!.toJson(),

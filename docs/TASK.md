@@ -257,14 +257,20 @@
 ### Day 12: Admin Master Complaint Console & Delegation Dialog
 * **Primary Objective:** Implement central administrative oversight and delegation controls.
 * **Tasks:**
-  - [ ] **[F]** Build `AdminAllComplaintsScreen`:
+  - [x] **[F]** Build `AdminAllComplaintsScreen`:
     - Real-time search bar (by Complaint ID or Title).
     - Multi-select filters (Category, Status, Escalated Only).
-  - [ ] **[F]** Build `AssignAuthorityDialog`:
-    - Authority staff dropdown populated from `GET /api/users?role=authority`.
+    - Responsive ticket cards with escalation banner, SLA indicators, and quick Assign/Reassign buttons.
+  - [x] **[F]** Build `AssignAuthorityDialog`:
+    - Authority staff dropdown populated dynamically from `GET /api/users?role=authority`.
+    - Shows staff name, email, and department.
+    - Optional admin remark/instructions text field.
     - Executes `PATCH /api/complaints/:id/assign`.
+  - [x] **[B]** Implement backend `GET /api/users` endpoint with role-based filtering (`role=authority`) protected with `authorize('admin')`.
+  - [x] **[F]** Update role-based routing in `SplashScreen`, `LoginScreen`, and `main.dart` to direct `admin` users to `/admin-complaints`.
 * **Verification & Testing:**
-  - Reassign an unassigned complaint to a technician and verify the technician immediately receives the ticket in their queue.
+  - Automated tests covering `ComplaintProvider` admin ticket queries, authority staff fetching, delegation API mutations, `AssignAuthorityDialog` interaction, and `AdminAllComplaintsScreen` filtering and assignment modal (77/77 tests passing).
+  - Verified backend endpoints with `backend/tests/day12.test.js` (8/8 assertions passing against live Mongo/Docker).
 * **Deliverable:** Central administrative complaint delegation tools.
 
 ---

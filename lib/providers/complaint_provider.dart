@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:major_project/core/network/api_client.dart';
 import 'package:major_project/models/category_model.dart';
 import 'package:major_project/models/complaint_model.dart';
+import 'package:major_project/models/user_model.dart';
 import 'package:major_project/services/category_service.dart';
 
 class ComplaintProvider extends ChangeNotifier {
@@ -31,6 +32,16 @@ class ComplaintProvider extends ChangeNotifier {
   String? _assignedError;
   bool _isUpdatingStatus = false;
 
+  List<ComplaintModel> _adminComplaints = [];
+  bool _isLoadingAdminComplaints = false;
+  String? _adminComplaintsError;
+
+  List<UserModel> _authorityStaff = [];
+  bool _isLoadingStaff = false;
+  String? _staffError;
+
+  bool _isAssigning = false;
+
   ComplaintProvider({
     required this.apiClient,
     required this.categoryService,
@@ -57,6 +68,16 @@ class ComplaintProvider extends ChangeNotifier {
   bool get isLoadingAssigned => _isLoadingAssigned;
   String? get assignedError => _assignedError;
   bool get isUpdatingStatus => _isUpdatingStatus;
+
+  List<ComplaintModel> get adminComplaints => _adminComplaints;
+  bool get isLoadingAdminComplaints => _isLoadingAdminComplaints;
+  String? get adminComplaintsError => _adminComplaintsError;
+
+  List<UserModel> get authorityStaff => _authorityStaff;
+  bool get isLoadingStaff => _isLoadingStaff;
+  String? get staffError => _staffError;
+
+  bool get isAssigning => _isAssigning;
 
   int get assignedCount =>
       _assignedComplaints.where((c) => c.status == 'Assigned').length;
@@ -554,6 +575,178 @@ class ComplaintProvider extends ChangeNotifier {
       return false;
     } catch (e) {
       _isUpdatingStatus = false;
+      _errorMessage = e.toString();
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<void> fetchAllComplaintsAdmin({
+    String? search,
+    String? status,
+    String? category,
+    String? priority,
+    bool? isEscalated,
+    int page = 1,
+  }) async {
+    _isLoadingAdminComplaints = true;
+    _adminComplaintsError = null;
+    notifyListeners();
+
+    try {
+      final queryParams = <String, dynamic>{
+        if (search != null && search.trim().isNotEmpty) 'search': search.trim(),
+        if (status != null && status.isNotEmpty && status != 'All') 'status': status,
+        if (category != null && category.isNotEmpty && category != 'All') 'category': category,
+        if (priority != null && priority.isNotEmpty && priority != 'All') 'priority': priority,
+        if (isEscalated == true) 'isEscalated': 'true',
+        'page': page,
+      };
+
+      final response = await apiClient.get('/complaints', queryParameters: queryParams);
+      final resData = response.data as Map<String, dynamic>;
+
+      List<dynamic> list = [];
+      if (resData['data'] is Map && resData['data']['complaints'] is List) {
+        list = resData['data']['complaints'] as List<dynamic>;
+      } else if (resData['complaints'] is List) {
+        list = resData['complaints'] as List<dynamic>;
+      } else if (resData['data'] is List) {
+        list = resData['data'] as List<dynamic>;
+      }
+
+      _adminComplaints = list
+          .map((item) => ComplaintModel.fromJson(item as Map<String, dynamic>))
+          .toList();
+      _isLoadingAdminComplaints = false;
+      notifyListeners();
+    } on DioException catch (e) {
+      _isLoadingAdminComplaints = false;
+      if (e.response?.data is Map && e.response!.data['message'] != null) {
+        _adminComplaintsError = e.response!.data['message'].toString();
+      } else {
+        _adminComplaintsError = e.message ?? 'Failed to load complaints';
+      }
+      notifyListeners();
+    } catch (e) {
+      _isLoadingAdminComplaints = false;
+      _adminComplaintsError = e.toString();
+      notifyListeners();
+    }
+  }
+
+  Future<void> fetchAuthorityStaff() async {
+    _isLoadingStaff = true;
+    _staffError = null;
+    notifyListeners();
+
+    try {
+      final response = await apiClient.get('/users', queryParameters: {'role': 'authority'});
+      final resData = response.data as Map<String, dynamic>;
+
+      List<dynamic> list = [];
+      if (resData['data'] is Map && resData['data']['users'] is List) {
+        list = resData['data']['users'] as List<dynamic>;
+      } else if (resData['users'] is List) {
+        list = resData['users'] as List<dynamic>;
+      } else if (resData['data'] is List) {
+        list = resData['data'] as List<dynamic>;
+      }
+
+      _authorityStaff = list
+          .map((item) => UserModel.fromJson(item as Map<String, dynamic>))
+          .toList();
+      _isLoadingStaff = false;
+      notifyListeners();
+    } on DioException catch (e) {
+      _isLoadingStaff = false;
+      if (e.response?.data is Map && e.response!.data['message'] != null) {
+        _staffError = e.response!.data['message'].toString();
+      } else {
+        _staffError = e.message ?? 'Failed to load authority staff';
+      }
+      notifyListeners();
+    } catch (e) {
+      _isLoadingStaff = false;
+      _staffError = e.toString();
+      notifyListeners();
+    }
+  }
+
+  Future<bool> assignComplaint({
+    required String complaintId,
+    required String authorityId,
+    String? authorityName,
+    String? remark,
+  }) async {
+    _isAssigning = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final response = await apiClient.patch(
+        '/complaints/$complaintId/assign',
+        data: {
+          'authorityId': authorityId,
+          if (remark != null && remark.trim().isNotEmpty) 'remark': remark.trim(),
+        },
+      );
+
+      final resData = response.data as Map<String, dynamic>;
+      final updatedData = resData['data'] is Map<String, dynamic>
+          ? resData['data'] as Map<String, dynamic>
+          : resData;
+
+      final resolvedAuthName = authorityName ??
+          (updatedData['assignedTo'] is Map
+              ? updatedData['assignedTo']['name']
+              : null) ??
+          _authorityStaff
+              .firstWhere(
+                (u) => u.id == authorityId,
+                orElse: () => UserModel(id: authorityId, name: 'Authority Staff', email: '', role: 'authority'),
+              )
+              .name;
+
+      final index = _adminComplaints.indexWhere(
+        (c) => c.id == complaintId || c.complaintId == complaintId,
+      );
+
+      if (index != -1) {
+        final existing = _adminComplaints[index];
+        _adminComplaints[index] = existing.copyWith(
+          status: 'Assigned',
+          assignedToName: resolvedAuthName,
+          assignedToId: authorityId,
+          dueDate: updatedData['dueDate'] != null
+              ? DateTime.tryParse(updatedData['dueDate'].toString())
+              : existing.dueDate,
+        );
+      }
+
+      if (_selectedComplaint != null &&
+          (_selectedComplaint!.id == complaintId || _selectedComplaint!.complaintId == complaintId)) {
+        _selectedComplaint = _selectedComplaint!.copyWith(
+          status: 'Assigned',
+          assignedToName: resolvedAuthName,
+          assignedToId: authorityId,
+        );
+      }
+
+      _isAssigning = false;
+      notifyListeners();
+      return true;
+    } on DioException catch (e) {
+      _isAssigning = false;
+      if (e.response?.data is Map && e.response!.data['message'] != null) {
+        _errorMessage = e.response!.data['message'].toString();
+      } else {
+        _errorMessage = e.message ?? 'Failed to assign complaint';
+      }
+      notifyListeners();
+      return false;
+    } catch (e) {
+      _isAssigning = false;
       _errorMessage = e.toString();
       notifyListeners();
       return false;
