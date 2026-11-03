@@ -9,6 +9,8 @@ import 'package:major_project/screens/login_screen.dart';
 import 'package:major_project/screens/register_screen.dart';
 import 'package:major_project/screens/splash_screen.dart';
 import 'package:major_project/screens/new_complaint_screen.dart';
+import 'package:major_project/screens/student_home_screen.dart';
+import 'package:major_project/screens/my_complaints_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -82,7 +84,8 @@ class MyApp extends StatelessWidget {
           '/': (context) => const SplashScreen(),
           '/login': (context) => const LoginScreen(),
           '/register': (context) => const RegisterScreen(),
-          '/home': (context) => const HomeScreenPlaceholder(),
+          '/home': (context) => const StudentHomeScreen(),
+          '/my-complaints': (context) => const MyComplaintsScreen(),
           '/new-complaint': (context) => const NewComplaintScreen(),
         },
       ),

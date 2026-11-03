@@ -200,15 +200,15 @@
 ### Day 9: Student Home, Complaint Tracking & Custom Widgets
 * **Primary Objective:** Build the student dashboard and complaint tracking screens.
 * **Tasks:**
-  - [ ] **[F]** Build reusable widgets:
+  - [x] **[F]** Build reusable widgets:
     - `StatusChip`: Visual badge with status-coded colors (e.g., Orange for Submitted, Blue for Assigned, Yellow for In Progress, Green for Resolved, Gray for Closed).
     - `PriorityBadge`: Visual indicator for Low, Medium, High, Urgent.
     - `ComplaintCard`: Summary card showing ID, title, category, date, and status.
-  - [ ] **[F]** Build `StudentHomeScreen` featuring:
+  - [x] **[F]** Build `StudentHomeScreen` featuring:
     - Welcome greeting with user name.
     - Prominent "Raise Complaint" action card.
     - Quick summary of active grievances.
-  - [ ] **[F]** Build `MyComplaintsScreen` with horizontal filter chips (`All`, `Active`, `Resolved`, `Closed`) and pull-to-refresh (`RefreshIndicator`).
+  - [x] **[F]** Build `MyComplaintsScreen` with horizontal filter chips (`All`, `Active`, `Resolved`, `Closed`) and pull-to-refresh (`RefreshIndicator`).
 * **Verification & Testing:**
   - Verify that tapping status chips filters the list instantly without extraneous network calls.
 * **Deliverable:** Polished student complaint browsing experience.

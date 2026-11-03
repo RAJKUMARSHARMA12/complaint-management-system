@@ -16,6 +16,10 @@ class ComplaintProvider extends ChangeNotifier {
   String? _errorMessage;
   ComplaintModel? _lastCreatedComplaint;
 
+  List<ComplaintModel> _myComplaints = [];
+  bool _isLoadingComplaints = false;
+  String? _complaintsError;
+
   ComplaintProvider({
     required this.apiClient,
     required this.categoryService,
@@ -27,6 +31,24 @@ class ComplaintProvider extends ChangeNotifier {
   double get uploadProgress => _uploadProgress;
   String? get errorMessage => _errorMessage;
   ComplaintModel? get lastCreatedComplaint => _lastCreatedComplaint;
+
+  List<ComplaintModel> get myComplaints => _myComplaints;
+  bool get isLoadingComplaints => _isLoadingComplaints;
+  String? get complaintsError => _complaintsError;
+
+  List<ComplaintModel> get activeComplaints =>
+      _myComplaints.where((c) => ['Submitted', 'Assigned', 'In Progress'].contains(c.status)).toList();
+
+  List<ComplaintModel> get resolvedComplaints =>
+      _myComplaints.where((c) => c.status == 'Resolved').toList();
+
+  List<ComplaintModel> get closedComplaints =>
+      _myComplaints.where((c) => c.status == 'Closed').toList();
+
+  int get totalComplaintsCount => _myComplaints.length;
+  int get activeComplaintsCount => activeComplaints.length;
+  int get resolvedComplaintsCount => resolvedComplaints.length;
+  int get closedComplaintsCount => closedComplaints.length;
 
   void clearError() {
     _errorMessage = null;
@@ -118,6 +140,7 @@ class ComplaintProvider extends ChangeNotifier {
               : resData;
 
       _lastCreatedComplaint = ComplaintModel.fromJson(complaintData);
+      _myComplaints.insert(0, _lastCreatedComplaint!);
       _isSubmitting = false;
       _uploadProgress = 1.0;
       notifyListeners();
@@ -136,6 +159,44 @@ class ComplaintProvider extends ChangeNotifier {
       _errorMessage = e.toString();
       notifyListeners();
       return false;
+    }
+  }
+
+  Future<void> fetchMyComplaints({bool refresh = false}) async {
+    _isLoadingComplaints = true;
+    _complaintsError = null;
+    notifyListeners();
+
+    try {
+      final response = await apiClient.get('/complaints/my');
+      final resData = response.data as Map<String, dynamic>;
+
+      List<dynamic> list = [];
+      if (resData['data'] is Map && resData['data']['complaints'] is List) {
+        list = resData['data']['complaints'] as List<dynamic>;
+      } else if (resData['complaints'] is List) {
+        list = resData['complaints'] as List<dynamic>;
+      } else if (resData['data'] is List) {
+        list = resData['data'] as List<dynamic>;
+      }
+
+      _myComplaints = list
+          .map((item) => ComplaintModel.fromJson(item as Map<String, dynamic>))
+          .toList();
+      _isLoadingComplaints = false;
+      notifyListeners();
+    } on DioException catch (e) {
+      _isLoadingComplaints = false;
+      if (e.response?.data is Map && e.response!.data['message'] != null) {
+        _complaintsError = e.response!.data['message'].toString();
+      } else {
+        _complaintsError = e.message ?? 'Failed to load complaints';
+      }
+      notifyListeners();
+    } catch (e) {
+      _isLoadingComplaints = false;
+      _complaintsError = e.toString();
+      notifyListeners();
     }
   }
 }

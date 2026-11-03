@@ -185,4 +185,11 @@ class AuthProvider extends ChangeNotifier {
     _isLoading = false;
     notifyListeners();
   }
+
+  @visibleForTesting
+  void setTestUser(UserModel user, [String token = 'test_token']) {
+    _user = user;
+    _token = token;
+    notifyListeners();
+  }
 }
