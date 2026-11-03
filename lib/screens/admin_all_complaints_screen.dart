@@ -461,16 +461,19 @@ class _AdminAllComplaintsScreenState extends State<AdminAllComplaintsScreen> {
                                 // Top row: Complaint ID + Badges
                                 Row(
                                   children: [
-                                    Text(
-                                      item.complaintId,
-                                      style: const TextStyle(
-                                        fontFamily: 'monospace',
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 13,
-                                        color: Colors.black87,
+                                    Flexible(
+                                      child: Text(
+                                        item.complaintId,
+                                        style: const TextStyle(
+                                          fontFamily: 'monospace',
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 13,
+                                          color: Colors.black87,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
-                                    const Spacer(),
+                                    const SizedBox(width: 8),
                                     PriorityBadge(priority: item.priority),
                                     const SizedBox(width: 8),
                                     Container(
@@ -511,17 +514,16 @@ class _AdminAllComplaintsScreenState extends State<AdminAllComplaintsScreen> {
                                   children: [
                                     Icon(Icons.category_outlined, size: 14, color: Colors.grey.shade600),
                                     const SizedBox(width: 4),
-                                    Text(
-                                      item.categoryName,
-                                      style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
-                                    ),
-                                    if (item.department != null && item.department!.isNotEmpty) ...[
-                                      Text(' • ', style: TextStyle(color: Colors.grey.shade500)),
-                                      Text(
-                                        item.department!,
-                                        style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                                    Flexible(
+                                      child: Text(
+                                        item.department != null && item.department!.isNotEmpty
+                                            ? '${item.categoryName} • ${item.department}'
+                                            : item.categoryName,
+                                        style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                    ],
+                                    ),
                                   ],
                                 ),
 
@@ -549,9 +551,13 @@ class _AdminAllComplaintsScreenState extends State<AdminAllComplaintsScreen> {
                                           ),
                                         ),
                                         const SizedBox(width: 4),
-                                        Text(
-                                          '— SLA Deadline Exceeded',
-                                          style: TextStyle(color: Colors.red.shade700, fontSize: 11),
+                                        Expanded(
+                                          child: Text(
+                                            '— SLA Deadline Exceeded',
+                                            style: TextStyle(color: Colors.red.shade700, fontSize: 11),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
                                         ),
                                       ],
                                     ),

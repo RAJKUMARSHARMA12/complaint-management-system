@@ -266,20 +266,32 @@ class _ManageUsersScreenState extends State<ManageUsersScreen>
             Tab(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.shield_outlined, size: 18),
-                  const SizedBox(width: 8),
-                  Text('Authorities (${adminProvider.authorityUsers.length})'),
+                  const Icon(Icons.shield_outlined, size: 16),
+                  const SizedBox(width: 6),
+                  Flexible(
+                    child: Text(
+                      'Authorities (${adminProvider.authorityUsers.length})',
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                 ],
               ),
             ),
             Tab(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.school_outlined, size: 18),
-                  const SizedBox(width: 8),
-                  Text('Students (${adminProvider.studentUsers.length})'),
+                  const Icon(Icons.school_outlined, size: 16),
+                  const SizedBox(width: 6),
+                  Flexible(
+                    child: Text(
+                      'Students (${adminProvider.studentUsers.length})',
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                 ],
               ),
             ),
