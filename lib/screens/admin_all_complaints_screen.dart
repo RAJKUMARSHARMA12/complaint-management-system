@@ -148,6 +148,11 @@ class _AdminAllComplaintsScreenState extends State<AdminAllComplaintsScreen> {
         ),
         actions: [
           IconButton(
+            icon: const Icon(Icons.analytics_outlined, color: Colors.black87),
+            onPressed: () => Navigator.pushNamed(context, '/admin-dashboard'),
+            tooltip: 'Executive Analytics',
+          ),
+          IconButton(
             icon: const Icon(Icons.category_outlined, color: Colors.black87),
             onPressed: () => Navigator.pushNamed(context, '/manage-categories'),
             tooltip: 'Manage Categories',

@@ -41,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (success) {
       final role = authProvider.user?.role.toLowerCase();
       if (role == 'admin') {
-        Navigator.pushReplacementNamed(context, '/admin-complaints');
+        Navigator.pushReplacementNamed(context, '/admin-dashboard');
       } else if (role == 'authority') {
         Navigator.pushReplacementNamed(context, '/authority-home');
       } else {

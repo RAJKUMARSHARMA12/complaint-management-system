@@ -51,6 +51,7 @@ app.use('/api/users', require('./routes/user.routes'));
 app.use('/api/categories', require('./routes/category.routes'));
 app.use('/api/complaints', require('./routes/complaint.routes'));
 app.use('/api/notifications', require('./routes/notification.routes'));
+app.use('/api/dashboard', require('./routes/dashboard.routes'));
 
 // Catch-all for undefined routes
 app.use((req, res) => {

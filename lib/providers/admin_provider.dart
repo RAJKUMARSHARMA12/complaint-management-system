@@ -2,12 +2,18 @@ import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:major_project/core/network/api_client.dart';
 import 'package:major_project/models/category_model.dart';
+import 'package:major_project/models/dashboard_stats_model.dart';
 import 'package:major_project/models/user_model.dart';
 import 'package:major_project/services/category_service.dart';
 
 class AdminProvider extends ChangeNotifier {
   final ApiClient apiClient;
   final CategoryService categoryService;
+
+  // Dashboard Analytics State
+  DashboardStatsModel? _dashboardData;
+  bool _isLoadingDashboard = false;
+  String? _dashboardError;
 
   // Category Governance State
   List<CategoryModel> _categories = [];
@@ -27,6 +33,10 @@ class AdminProvider extends ChangeNotifier {
     required this.categoryService,
   });
 
+  DashboardStatsModel? get dashboardData => _dashboardData;
+  bool get isLoadingDashboard => _isLoadingDashboard;
+  String? get dashboardError => _dashboardError;
+
   List<CategoryModel> get categories => _categories;
   bool get isLoadingCategories => _isLoadingCategories;
   String? get categoryError => _categoryError;
@@ -39,9 +49,81 @@ class AdminProvider extends ChangeNotifier {
   bool get isSavingUser => _isSavingUser;
 
   void clearErrors() {
+    _dashboardError = null;
     _categoryError = null;
     _userError = null;
     notifyListeners();
+  }
+
+  void setTestDashboardData(DashboardStatsModel data) {
+    _dashboardData = data;
+    notifyListeners();
+  }
+
+  // ==================== Executive Dashboard Analytics ====================
+
+  Future<void> fetchDashboardAnalytics() async {
+    _isLoadingDashboard = true;
+    _dashboardError = null;
+    notifyListeners();
+
+    try {
+      final results = await Future.wait([
+        apiClient.get('/dashboard/stats'),
+        apiClient.get('/dashboard/by-category'),
+        apiClient.get('/dashboard/by-status'),
+        apiClient.get('/dashboard/monthly-trend'),
+        apiClient.get('/dashboard/resolution-time'),
+      ]);
+
+      final statsRes = results[0].data as Map<String, dynamic>;
+      final statsData = statsRes['data'] is Map<String, dynamic>
+          ? statsRes['data'] as Map<String, dynamic>
+          : statsRes;
+
+      final catRes = results[1].data as Map<String, dynamic>;
+      final categoryData = (catRes['data'] as List<dynamic>?) ?? [];
+
+      final statusRes = results[2].data as Map<String, dynamic>;
+      final statusData = (statusRes['data'] as List<dynamic>?) ?? [];
+
+      final trendRes = results[3].data as Map<String, dynamic>;
+      final trendData = (trendRes['data'] as List<dynamic>?) ?? [];
+
+      final mttrRes = results[4].data as Map<String, dynamic>;
+      final mttrData = (mttrRes['data'] as List<dynamic>?) ?? [];
+
+      _dashboardData = DashboardStatsModel(
+        stats: DashboardStats.fromJson(statsData),
+        categoryDistribution: categoryData
+            .map((c) => CategoryCount.fromJson(c as Map<String, dynamic>))
+            .toList(),
+        statusDistribution: statusData
+            .map((s) => StatusCount.fromJson(s as Map<String, dynamic>))
+            .toList(),
+        monthlyTrend: trendData
+            .map((m) => MonthlyCount.fromJson(m as Map<String, dynamic>))
+            .toList(),
+        resolutionTime: mttrData
+            .map((r) => MttrItem.fromJson(r as Map<String, dynamic>))
+            .toList(),
+      );
+
+      _isLoadingDashboard = false;
+      notifyListeners();
+    } on DioException catch (e) {
+      _isLoadingDashboard = false;
+      if (e.response?.data is Map && e.response!.data['message'] != null) {
+        _dashboardError = e.response!.data['message'].toString();
+      } else {
+        _dashboardError = e.message ?? 'Failed to load dashboard analytics';
+      }
+      notifyListeners();
+    } catch (e) {
+      _isLoadingDashboard = false;
+      _dashboardError = e.toString();
+      notifyListeners();
+    }
   }
 
   // ==================== Category Governance ====================

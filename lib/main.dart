@@ -16,6 +16,7 @@ import 'package:major_project/screens/notification_inbox_screen.dart';
 import 'package:major_project/providers/admin_provider.dart';
 import 'package:major_project/screens/complaint_detail_screen.dart';
 import 'package:major_project/screens/authority_home_screen.dart';
+import 'package:major_project/screens/admin_dashboard_screen.dart';
 import 'package:major_project/screens/admin_all_complaints_screen.dart';
 import 'package:major_project/screens/manage_categories_screen.dart';
 import 'package:major_project/screens/manage_users_screen.dart';
@@ -105,6 +106,7 @@ class MyApp extends StatelessWidget {
           '/register': (context) => const RegisterScreen(),
           '/home': (context) => const StudentHomeScreen(),
           '/authority-home': (context) => const AuthorityHomeScreen(),
+          '/admin-dashboard': (context) => const AdminDashboardScreen(),
           '/admin-complaints': (context) => const AdminAllComplaintsScreen(),
           '/manage-categories': (context) => const ManageCategoriesScreen(),
           '/manage-users': (context) => const ManageUsersScreen(),
