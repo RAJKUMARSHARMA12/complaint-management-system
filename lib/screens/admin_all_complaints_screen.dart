@@ -148,6 +148,16 @@ class _AdminAllComplaintsScreenState extends State<AdminAllComplaintsScreen> {
         ),
         actions: [
           IconButton(
+            icon: const Icon(Icons.category_outlined, color: Colors.black87),
+            onPressed: () => Navigator.pushNamed(context, '/manage-categories'),
+            tooltip: 'Manage Categories',
+          ),
+          IconButton(
+            icon: const Icon(Icons.manage_accounts_outlined, color: Colors.black87),
+            onPressed: () => Navigator.pushNamed(context, '/manage-users'),
+            tooltip: 'User Governance',
+          ),
+          IconButton(
             icon: const Icon(Icons.refresh_rounded, color: Colors.black87),
             onPressed: _fetchFilteredComplaints,
             tooltip: 'Refresh',

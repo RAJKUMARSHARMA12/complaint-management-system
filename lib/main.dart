@@ -13,9 +13,12 @@ import 'package:major_project/screens/new_complaint_screen.dart';
 import 'package:major_project/screens/student_home_screen.dart';
 import 'package:major_project/screens/my_complaints_screen.dart';
 import 'package:major_project/screens/notification_inbox_screen.dart';
+import 'package:major_project/providers/admin_provider.dart';
 import 'package:major_project/screens/complaint_detail_screen.dart';
 import 'package:major_project/screens/authority_home_screen.dart';
 import 'package:major_project/screens/admin_all_complaints_screen.dart';
+import 'package:major_project/screens/manage_categories_screen.dart';
+import 'package:major_project/screens/manage_users_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -61,6 +64,12 @@ class MyApp extends StatelessWidget {
             apiClient: effectiveApiClient,
           ),
         ),
+        ChangeNotifierProvider<AdminProvider>(
+          create: (_) => AdminProvider(
+            apiClient: effectiveApiClient,
+            categoryService: effectiveCategoryService,
+          ),
+        ),
       ],
       child: MaterialApp(
         title: 'CampusVoice',
@@ -97,6 +106,8 @@ class MyApp extends StatelessWidget {
           '/home': (context) => const StudentHomeScreen(),
           '/authority-home': (context) => const AuthorityHomeScreen(),
           '/admin-complaints': (context) => const AdminAllComplaintsScreen(),
+          '/manage-categories': (context) => const ManageCategoriesScreen(),
+          '/manage-users': (context) => const ManageUsersScreen(),
           '/my-complaints': (context) => const MyComplaintsScreen(),
           '/new-complaint': (context) => const NewComplaintScreen(),
           '/notifications': (context) => const NotificationInboxScreen(),

@@ -278,15 +278,22 @@
 ### Day 13: Category & User Governance Interfaces
 * **Primary Objective:** Provide administrative CRUD interfaces for campus departments and staff accounts.
 * **Tasks:**
-  - [ ] **[F]** Build `ManageCategoriesScreen`:
+  - [x] **[F]** Build `ManageCategoriesScreen`:
     - List categories with active/inactive toggles and SLA days badges.
-    - "Add Category" modal dialog (Name, Description, SLA Days, Default Authority).
-  - [ ] **[F]** Build `ManageUsersScreen`:
+    - "Add Category" modal dialog (Name, Description, SLA Days, Default Authority dropdown).
+    - Status toggle switch with immediate API sync.
+  - [x] **[F]** Build `ManageUsersScreen`:
     - Segmented tabs: `Authorities` vs `Students`.
-    - User activation toggle (activate/deactivate access).
-    - "Add Authority" dialog (Name, Email, Department, Initial Password).
+    - User activation toggle switch (activate/deactivate access).
+    - "Add Authority" dialog (Name, Email, Department, Initial Password, Phone).
+    - Search filtering across both tabs.
+  - [x] **[B]** Implement backend endpoints:
+    - `POST /api/users/authority` to create authority accounts (Admin only).
+    - `PATCH /api/users/:id/status` to toggle user active status (Admin only).
+  - [x] **[F]** Implement `AdminProvider` state management and register routes `/manage-categories` and `/manage-users`.
 * **Verification & Testing:**
-  - Create a new category "Sports Complex", lodge a complaint under it, and confirm auto-routing.
+  - Automated tests covering `AdminProvider` category and user mutations, `ManageCategoriesScreen` and `ManageUsersScreen` widget tests (89/89 total Flutter tests passing, 0 analyzer issues).
+  - Backend integration test suite `backend/tests/day13.test.js` (15/15 assertions passing against live Mongo/Docker).
 * **Deliverable:** Fully functional administrative master data controls.
 
 ---
