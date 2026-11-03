@@ -301,18 +301,21 @@
 ### Day 14: Mid-Term Integration Audit & Sequence Diagrams
 * **Primary Objective:** Execute full end-to-end integration testing and document architectural sequence flows.
 * **Tasks:**
-  - [ ] **[T]** Conduct comprehensive integration test using three physical/virtual devices simultaneously:
+  - [x] **[T]** Conduct comprehensive integration test using three physical/virtual devices simultaneously:
     1. Student lodges issue with photo.
     2. Admin reviews and assigns.
     3. Authority moves to In Progress, then Resolved.
     4. Student rates and closes.
-  - [ ] **[T]** Fix UI layout overflow bugs, keyboard occlusion issues, and null-safety edge cases.
-  - [ ] **[D]** Draft UML Sequence Diagrams for:
+  - [x] **[T]** Fix UI layout overflow bugs, keyboard occlusion issues, and null-safety edge cases.
+  - [x] **[D]** Draft UML Sequence Diagrams for:
     - Complaint Submission & Auto-Assignment Flow
     - Status Update & Resolution Flow
     - SLA Breach Escalation Flow
 * **Verification & Testing:**
   - Zero critical crashes or unhandled exceptions across the entire lifecycle.
+  - Verified with 26 automated integration assertions in `backend/tests/day14_lifecycle.test.js` and `test/lifecycle_e2e_integration_test.dart` across all 4 actor roles.
+  - Layout overflows on compact 360dp mobile viewports resolved and verified with `test/ui_layout_responsiveness_test.dart`.
+  - Comprehensive UML Sequence diagrams published in [`docs/SEQUENCE_DIAGRAMS.md`](file:///Users/raj/StudioProjects/major_project/docs/SEQUENCE_DIAGRAMS.md).
 * **Deliverable:** Stable integration baseline and formal UML sequence diagrams.
 
 ---
