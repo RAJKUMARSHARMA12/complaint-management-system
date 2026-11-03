@@ -39,7 +39,12 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!mounted) return;
 
     if (success) {
-      Navigator.pushReplacementNamed(context, '/home');
+      final role = authProvider.user?.role.toLowerCase();
+      if (role == 'authority') {
+        Navigator.pushReplacementNamed(context, '/authority-home');
+      } else {
+        Navigator.pushReplacementNamed(context, '/home');
+      }
     } else {
       final errorMsg = authProvider.errorMessage ?? 'Login failed. Please try again.';
       ScaffoldMessenger.of(context).showSnackBar(

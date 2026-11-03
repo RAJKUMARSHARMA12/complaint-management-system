@@ -23,7 +23,12 @@ class _SplashScreenState extends State<SplashScreen> {
     if (!mounted) return;
 
     if (isAuthenticated) {
-      Navigator.pushReplacementNamed(context, '/home');
+      final role = authProvider.user?.role.toLowerCase();
+      if (role == 'authority') {
+        Navigator.pushReplacementNamed(context, '/authority-home');
+      } else {
+        Navigator.pushReplacementNamed(context, '/home');
+      }
     } else {
       Navigator.pushReplacementNamed(context, '/login');
     }

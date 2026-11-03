@@ -240,15 +240,16 @@
 ### Day 11: Authority Queue & Status Update Bottom Sheet
 * **Primary Objective:** Build the dedicated authority experience for maintenance personnel and department heads.
 * **Tasks:**
-  - [ ] **[F]** Build `AuthorityHomeScreen`:
+  - [x] **[F]** Build `AuthorityHomeScreen`:
     - KPI cards: Assigned Tickets, In Progress, Pending Verification.
     - Filterable list of assigned grievances.
-  - [ ] **[F]** Build `StatusUpdateBottomSheet`:
+  - [x] **[F]** Build `StatusUpdateBottomSheet`:
     - Dynamically presents only valid next statuses based on the FSM matrix.
     - Mandatory action remark input field.
     - Dispatches `PATCH /api/complaints/:id/status`.
 * **Verification & Testing:**
   - Log in as `warden.hostel@college.edu`, view assigned tickets, update status to `In Progress` with a remark, and confirm instant timeline update.
+  - Verified with 68/68 automated tests passing across providers, widgets, and workflow integration.
 * **Deliverable:** Operational authority management portal.
 
 ---

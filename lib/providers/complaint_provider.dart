@@ -26,6 +26,11 @@ class ComplaintProvider extends ChangeNotifier {
   bool _isPostingRemark = false;
   bool _isSubmittingFeedback = false;
 
+  List<ComplaintModel> _assignedComplaints = [];
+  bool _isLoadingAssigned = false;
+  String? _assignedError;
+  bool _isUpdatingStatus = false;
+
   ComplaintProvider({
     required this.apiClient,
     required this.categoryService,
@@ -47,6 +52,22 @@ class ComplaintProvider extends ChangeNotifier {
   String? get detailError => _detailError;
   bool get isPostingRemark => _isPostingRemark;
   bool get isSubmittingFeedback => _isSubmittingFeedback;
+
+  List<ComplaintModel> get assignedComplaints => _assignedComplaints;
+  bool get isLoadingAssigned => _isLoadingAssigned;
+  String? get assignedError => _assignedError;
+  bool get isUpdatingStatus => _isUpdatingStatus;
+
+  int get assignedCount =>
+      _assignedComplaints.where((c) => c.status == 'Assigned').length;
+
+  int get inProgressCount =>
+      _assignedComplaints.where((c) => c.status == 'In Progress').length;
+
+  int get resolvedCount =>
+      _assignedComplaints.where((c) => c.status == 'Resolved').length;
+
+  int get totalAssignedCount => _assignedComplaints.length;
 
   List<ComplaintModel> get activeComplaints =>
       _myComplaints.where((c) => ['Submitted', 'Assigned', 'In Progress'].contains(c.status)).toList();
@@ -399,6 +420,140 @@ class ComplaintProvider extends ChangeNotifier {
       return false;
     } catch (e) {
       _isSubmittingFeedback = false;
+      _errorMessage = e.toString();
+      notifyListeners();
+      return false;
+    }
+  }
+
+  List<String> getAllowedTransitions(String currentStatus) {
+    switch (currentStatus) {
+      case 'Submitted':
+        return ['Assigned'];
+      case 'Assigned':
+        return ['In Progress'];
+      case 'In Progress':
+        return ['Resolved'];
+      case 'Resolved':
+        return ['Closed', 'In Progress'];
+      case 'Closed':
+      default:
+        return [];
+    }
+  }
+
+  Future<void> fetchAssignedComplaints({bool refresh = false}) async {
+    _isLoadingAssigned = true;
+    _assignedError = null;
+    notifyListeners();
+
+    try {
+      final response = await apiClient.get('/complaints/assigned');
+      final resData = response.data as Map<String, dynamic>;
+
+      List<dynamic> list = [];
+      if (resData['data'] is Map && resData['data']['complaints'] is List) {
+        list = resData['data']['complaints'] as List<dynamic>;
+      } else if (resData['complaints'] is List) {
+        list = resData['complaints'] as List<dynamic>;
+      } else if (resData['data'] is List) {
+        list = resData['data'] as List<dynamic>;
+      }
+
+      _assignedComplaints = list
+          .map((item) => ComplaintModel.fromJson(item as Map<String, dynamic>))
+          .toList();
+      _isLoadingAssigned = false;
+      notifyListeners();
+    } on DioException catch (e) {
+      _isLoadingAssigned = false;
+      if (e.response?.data is Map && e.response!.data['message'] != null) {
+        _assignedError = e.response!.data['message'].toString();
+      } else {
+        _assignedError = e.message ?? 'Failed to load assigned complaints';
+      }
+      notifyListeners();
+    } catch (e) {
+      _isLoadingAssigned = false;
+      _assignedError = e.toString();
+      notifyListeners();
+    }
+  }
+
+  Future<bool> updateComplaintStatus({
+    required String complaintId,
+    required String nextStatus,
+    String? remark,
+  }) async {
+    _isUpdatingStatus = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final response = await apiClient.patch(
+        '/complaints/$complaintId/status',
+        data: {
+          'status': nextStatus,
+          if (remark != null && remark.trim().isNotEmpty) 'remark': remark.trim(),
+        },
+      );
+
+      final resData = response.data as Map<String, dynamic>;
+      final updatedData = resData['data'] is Map<String, dynamic>
+          ? resData['data'] as Map<String, dynamic>
+          : resData;
+
+      // Update in _assignedComplaints list
+      final index = _assignedComplaints.indexWhere(
+        (c) => c.id == complaintId || c.complaintId == complaintId,
+      );
+
+      if (index != -1) {
+        final existing = _assignedComplaints[index];
+        _assignedComplaints[index] = existing.copyWith(
+          status: updatedData['status'] ?? nextStatus,
+          resolvedAt: updatedData['resolvedAt'] != null
+              ? DateTime.tryParse(updatedData['resolvedAt'].toString())
+              : existing.resolvedAt,
+        );
+      }
+
+      // Update in _selectedComplaint if currently selected
+      if (_selectedComplaint != null &&
+          (_selectedComplaint!.id == complaintId || _selectedComplaint!.complaintId == complaintId)) {
+        _selectedComplaint = _selectedComplaint!.copyWith(
+          status: updatedData['status'] ?? nextStatus,
+          resolvedAt: updatedData['resolvedAt'] != null
+              ? DateTime.tryParse(updatedData['resolvedAt'].toString())
+              : _selectedComplaint!.resolvedAt,
+        );
+      }
+
+      // Update in _myComplaints if present
+      final myIndex = _myComplaints.indexWhere(
+        (c) => c.id == complaintId || c.complaintId == complaintId,
+      );
+      if (myIndex != -1) {
+        final existing = _myComplaints[myIndex];
+        _myComplaints[myIndex] = existing.copyWith(
+          status: updatedData['status'] ?? nextStatus,
+        );
+      }
+
+      _isUpdatingStatus = false;
+      notifyListeners();
+      return true;
+    } on DioException catch (e) {
+      _isUpdatingStatus = false;
+      if (e.response?.data is Map && e.response!.data['message'] != null) {
+        _errorMessage = e.response!.data['message'].toString();
+      } else {
+        _errorMessage = e.message ?? 'Failed to update status';
+      }
+      notifyListeners();
+      return false;
+    } catch (e) {
+      _isUpdatingStatus = false;
       _errorMessage = e.toString();
       notifyListeners();
       return false;

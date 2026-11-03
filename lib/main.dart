@@ -14,6 +14,7 @@ import 'package:major_project/screens/student_home_screen.dart';
 import 'package:major_project/screens/my_complaints_screen.dart';
 import 'package:major_project/screens/notification_inbox_screen.dart';
 import 'package:major_project/screens/complaint_detail_screen.dart';
+import 'package:major_project/screens/authority_home_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -93,6 +94,7 @@ class MyApp extends StatelessWidget {
           '/login': (context) => const LoginScreen(),
           '/register': (context) => const RegisterScreen(),
           '/home': (context) => const StudentHomeScreen(),
+          '/authority-home': (context) => const AuthorityHomeScreen(),
           '/my-complaints': (context) => const MyComplaintsScreen(),
           '/new-complaint': (context) => const NewComplaintScreen(),
           '/notifications': (context) => const NotificationInboxScreen(),

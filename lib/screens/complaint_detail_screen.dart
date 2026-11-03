@@ -7,6 +7,7 @@ import 'package:major_project/providers/auth_provider.dart';
 import 'package:major_project/widgets/status_chip.dart';
 import 'package:major_project/widgets/priority_badge.dart';
 import 'package:major_project/widgets/feedback_dialog.dart';
+import 'package:major_project/widgets/status_update_bottom_sheet.dart';
 
 class ComplaintDetailScreen extends StatefulWidget {
   final String complaintId;
@@ -126,6 +127,47 @@ class _ComplaintDetailScreenState extends State<ComplaintDetailScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Thank you! Feedback recorded and ticket closed.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    });
+  }
+
+  void _showStatusUpdateModal(ComplaintModel complaint, ComplaintProvider provider) {
+    final allowed = provider.getAllowedTransitions(complaint.status);
+    if (allowed.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Complaint ${complaint.complaintId} is in a terminal state (${complaint.status}).'),
+        ),
+      );
+      return;
+    }
+
+    showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => StatusUpdateBottomSheet(
+        complaint: complaint,
+        allowedTransitions: allowed,
+        onUpdateStatus: (nextStatus, remark) async {
+          return await provider.updateComplaintStatus(
+            complaintId: complaint.id,
+            nextStatus: nextStatus,
+            remark: remark,
+          );
+        },
+      ),
+    ).then((updated) {
+      if (updated == true && mounted) {
+        provider.fetchComplaintById(widget.complaintId);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Complaint status successfully updated!'),
             backgroundColor: Colors.green,
           ),
         );
@@ -325,6 +367,67 @@ class _ComplaintDetailScreenState extends State<ComplaintDetailScreen> {
                     ],
                   ],
                 ),
+              ),
+
+              // Authority/Admin Status Progression Action Banner (if not closed and user is authority/admin)
+              Builder(
+                builder: (context) {
+                  final auth = context.watch<AuthProvider>();
+                  final role = auth.user?.role.toLowerCase();
+                  final isStaff = role == 'authority' || role == 'admin';
+
+                  if (isStaff && complaint.status != 'Closed') {
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.indigo.shade50,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.indigo.shade200),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.security_update_good_rounded, color: Colors.indigo.shade700, size: 28),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Update Ticket Status',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15,
+                                      color: Colors.indigo.shade900,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    'Advance workflow status or record action notes.',
+                                    style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            ElevatedButton(
+                              key: const Key('detail_update_status_button'),
+                              onPressed: () => _showStatusUpdateModal(complaint, provider),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.indigo,
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                              ),
+                              child: const Text('Update'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
               ),
 
               // Feedback Resolution Banner / Card (if Resolved or Closed)
