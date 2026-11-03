@@ -10,6 +10,7 @@ import 'package:major_project/providers/auth_provider.dart';
 import 'package:major_project/providers/complaint_provider.dart';
 import 'package:major_project/providers/notification_provider.dart';
 import 'package:major_project/screens/admin_all_complaints_screen.dart';
+import 'package:major_project/screens/admin_dashboard_screen.dart';
 import 'package:major_project/screens/manage_categories_screen.dart';
 import 'package:major_project/screens/manage_users_screen.dart';
 import 'package:major_project/services/category_service.dart';
@@ -152,6 +153,93 @@ void main() {
                 ),
               );
             }
+            if (options.path == '/dashboard/stats') {
+              return handler.resolve(
+                Response(
+                  requestOptions: options,
+                  statusCode: 200,
+                  data: {
+                    'success': true,
+                    'data': {
+                      'totalComplaints': 150,
+                      'openComplaints': 25,
+                      'resolvedComplaints': 75,
+                      'closedComplaints': 50,
+                      'escalatedComplaints': 6,
+                    },
+                  },
+                ),
+              );
+            }
+            if (options.path == '/dashboard/by-category') {
+              return handler.resolve(
+                Response(
+                  requestOptions: options,
+                  statusCode: 200,
+                  data: {
+                    'success': true,
+                    'data': [
+                      {'category': 'Hostel & Residential Maintenance Very Long Name', 'count': 60},
+                      {'category': 'Mess Dining & Food Quality', 'count': 40},
+                      {'category': 'Electrical & Generator Infrastructure', 'count': 30},
+                      {'category': 'Sanitation & Hygiene Services', 'count': 20},
+                    ],
+                  },
+                ),
+              );
+            }
+            if (options.path == '/dashboard/by-status') {
+              return handler.resolve(
+                Response(
+                  requestOptions: options,
+                  statusCode: 200,
+                  data: {
+                    'success': true,
+                    'data': [
+                      {'status': 'Submitted', 'count': 10},
+                      {'status': 'Assigned', 'count': 5},
+                      {'status': 'In Progress', 'count': 10},
+                      {'status': 'Resolved', 'count': 75},
+                      {'status': 'Closed', 'count': 50},
+                    ],
+                  },
+                ),
+              );
+            }
+            if (options.path == '/dashboard/monthly-trend') {
+              return handler.resolve(
+                Response(
+                  requestOptions: options,
+                  statusCode: 200,
+                  data: {
+                    'success': true,
+                    'data': [
+                      {'month': 'Oct 2025', 'count': 18},
+                      {'month': 'Nov 2025', 'count': 22},
+                      {'month': 'Dec 2025', 'count': 28},
+                      {'month': 'Jan 2026', 'count': 34},
+                      {'month': 'Feb 2026', 'count': 48},
+                    ],
+                  },
+                ),
+              );
+            }
+            if (options.path == '/dashboard/resolution-time') {
+              return handler.resolve(
+                Response(
+                  requestOptions: options,
+                  statusCode: 200,
+                  data: {
+                    'success': true,
+                    'data': [
+                      {'category': 'Hostel Maintenance', 'avgHours': 42.5},
+                      {'category': 'Mess Dining', 'avgHours': 18.2},
+                      {'category': 'Overall Average', 'avgHours': 32.4},
+                    ],
+                  },
+                ),
+              );
+            }
             return handler.next(options);
           },
         ),
@@ -214,6 +302,32 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(AdminAllComplaintsScreen), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('AdminDashboardScreen renders on compact 360x640 with zero overflow', (tester) async {
+      tester.view.physicalSize = const Size(360, 640);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(wrap(const AdminDashboardScreen()));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AdminDashboardScreen), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('AdminDashboardScreen renders on modern 390x844 with zero overflow', (tester) async {
+      tester.view.physicalSize = const Size(390, 844);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(wrap(const AdminDashboardScreen()));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AdminDashboardScreen), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
   });
