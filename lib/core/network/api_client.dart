@@ -67,8 +67,16 @@ class ApiClient {
     );
   }
 
+  static const String liveCloudUrl = 'https://campusvoice-api.onrender.com/api';
+  static const String localDevUrl = 'http://127.0.0.1:5001/api';
+
   static String get defaultBaseUrl {
-    return 'http://127.0.0.1:5001/api';
+    const envUrl = String.fromEnvironment('API_BASE_URL');
+    if (envUrl.isNotEmpty) {
+      return envUrl;
+    }
+    // In production release builds or cloud testing, connects to live Render domain
+    return liveCloudUrl;
   }
 
   Future<Response<T>> get<T>(

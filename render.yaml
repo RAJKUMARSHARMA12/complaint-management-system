@@ -1,0 +1,40 @@
+# ==============================================================================
+# CampusVoice Cloud Deployment Blueprint (Render.com)
+# Web Service Specification for Node.js REST API Backend
+# ==============================================================================
+services:
+  - type: web
+    name: campusvoice-api
+    runtime: node
+    plan: free
+    region: oregon
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: "production"
+      - key: PORT
+        value: "10000"
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: "7d"
+      - key: ALLOWED_ORIGINS
+        value: "*"
+      - key: LOGIN_RATE_LIMIT_MAX
+        value: "5"
+      - key: API_RATE_LIMIT_MAX
+        value: "100"
+      - key: STORAGE_TYPE
+        value: "cloudinary"
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
