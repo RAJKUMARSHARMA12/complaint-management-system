@@ -9,6 +9,7 @@ import 'package:major_project/widgets/priority_badge.dart';
 import 'package:major_project/widgets/escalation_badge.dart';
 import 'package:major_project/widgets/feedback_dialog.dart';
 import 'package:major_project/widgets/status_update_bottom_sheet.dart';
+import 'package:major_project/widgets/skeleton_loading.dart';
 
 class ComplaintDetailScreen extends StatefulWidget {
   final String complaintId;
@@ -232,7 +233,10 @@ class _ComplaintDetailScreenState extends State<ComplaintDetailScreen> {
             ],
           ),
           body: isLoading && complaint == null
-              ? const Center(child: CircularProgressIndicator())
+              ? const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: ComplaintCardSkeleton(),
+                )
               : error != null && complaint == null
                   ? Center(
                       child: Padding(
@@ -267,7 +271,10 @@ class _ComplaintDetailScreenState extends State<ComplaintDetailScreen> {
   Widget _buildDetailContent(ComplaintModel complaint, ComplaintProvider provider) {
     final dateFormat = DateFormat('MMM dd, yyyy • hh:mm a');
 
-    return Column(
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      behavior: HitTestBehavior.opaque,
+      child: Column(
       children: [
         Expanded(
           child: ListView(
@@ -674,6 +681,7 @@ class _ComplaintDetailScreenState extends State<ComplaintDetailScreen> {
             ),
           ),
       ],
+    ),
     );
   }
 

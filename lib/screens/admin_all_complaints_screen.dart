@@ -4,7 +4,9 @@ import 'package:major_project/models/complaint_model.dart';
 import 'package:major_project/providers/auth_provider.dart';
 import 'package:major_project/providers/complaint_provider.dart';
 import 'package:major_project/widgets/assign_authority_dialog.dart';
+import 'package:major_project/widgets/empty_state_view.dart';
 import 'package:major_project/widgets/priority_badge.dart';
+import 'package:major_project/widgets/skeleton_loading.dart';
 
 class AdminAllComplaintsScreen extends StatefulWidget {
   const AdminAllComplaintsScreen({super.key});
@@ -179,8 +181,11 @@ class _AdminAllComplaintsScreenState extends State<AdminAllComplaintsScreen> {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: _fetchFilteredComplaints,
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.opaque,
+        child: RefreshIndicator(
+          onRefresh: _fetchFilteredComplaints,
         child: CustomScrollView(
           slivers: [
             SliverToBoxAdapter(
@@ -372,8 +377,8 @@ class _AdminAllComplaintsScreenState extends State<AdminAllComplaintsScreen> {
 
             // List of Complaints or Empty/Error State
             if (complaintProvider.isLoadingAdminComplaints && complaints.isEmpty)
-              const SliverFillRemaining(
-                child: Center(child: CircularProgressIndicator()),
+              const SliverToBoxAdapter(
+                child: ComplaintListSkeleton(count: 4),
               )
             else if (complaintProvider.adminComplaintsError != null && complaints.isEmpty)
               SliverFillRemaining(
@@ -405,23 +410,12 @@ class _AdminAllComplaintsScreenState extends State<AdminAllComplaintsScreen> {
               )
             else if (complaints.isEmpty)
               SliverFillRemaining(
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.inbox_outlined, size: 64, color: Colors.grey.shade400),
-                      const SizedBox(height: 12),
-                      Text(
-                        'No tickets found',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey.shade700),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Try adjusting your search query or filters',
-                        style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
-                      ),
-                    ],
-                  ),
+                child: EmptyStateView(
+                  icon: Icons.inbox_outlined,
+                  title: 'No tickets found',
+                  message: 'Try adjusting your search query, status filters, or category selection.',
+                  actionLabel: 'Refresh Console',
+                  onAction: _fetchFilteredComplaints,
                 ),
               )
             else
@@ -640,6 +634,7 @@ class _AdminAllComplaintsScreenState extends State<AdminAllComplaintsScreen> {
               ),
           ],
         ),
+      ),
       ),
     );
   }

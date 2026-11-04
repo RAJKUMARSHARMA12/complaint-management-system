@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:major_project/models/user_model.dart';
 import 'package:major_project/providers/admin_provider.dart';
+import 'package:major_project/widgets/empty_state_view.dart';
+import 'package:major_project/widgets/skeleton_loading.dart';
 
 class ManageUsersScreen extends StatefulWidget {
   const ManageUsersScreen({super.key});
@@ -312,8 +314,11 @@ class _ManageUsersScreenState extends State<ManageUsersScreen>
               label: const Text('Add Authority'),
             )
           : null,
-      body: Column(
-        children: [
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.opaque,
+        child: Column(
+          children: [
           Container(
             color: Colors.white,
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
@@ -363,6 +368,7 @@ class _ManageUsersScreenState extends State<ManageUsersScreen>
           ),
         ],
       ),
+      ),
     );
   }
 
@@ -385,33 +391,18 @@ class _ManageUsersScreenState extends State<ManageUsersScreen>
     return RefreshIndicator(
       onRefresh: () => adminProvider.fetchUsers(role: role),
       child: adminProvider.isLoadingUsers && users.isEmpty
-          ? const Center(child: CircularProgressIndicator())
+          ? const ComplaintListSkeleton(count: 3)
           : filtered.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        role == 'authority'
-                            ? Icons.engineering_outlined
-                            : Icons.people_outline,
-                        size: 64,
-                        color: Colors.grey.shade400,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'No $role users found',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey.shade700),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        _searchQuery.isNotEmpty
-                            ? 'No matches for "$_searchQuery"'
-                            : 'No user accounts recorded in this role.',
-                        style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
-                      ),
-                    ],
-                  ),
+              ? EmptyStateView(
+                  icon: role == 'authority'
+                      ? Icons.engineering_outlined
+                      : Icons.people_outline,
+                  title: 'No $role users found',
+                  message: _searchQuery.isNotEmpty
+                      ? 'No matches for "$_searchQuery"'
+                      : 'No user accounts recorded in this role.',
+                  actionLabel: 'Refresh Users',
+                  onAction: _loadUsers,
                 )
               : ListView.builder(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 80),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:major_project/models/category_model.dart';
 import 'package:major_project/providers/admin_provider.dart';
+import 'package:major_project/widgets/empty_state_view.dart';
+import 'package:major_project/widgets/skeleton_loading.dart';
 
 class ManageCategoriesScreen extends StatefulWidget {
   const ManageCategoriesScreen({super.key});
@@ -264,25 +266,14 @@ class _ManageCategoriesScreenState extends State<ManageCategoriesScreen> {
       body: RefreshIndicator(
         onRefresh: () => adminProvider.fetchCategoriesAdmin(),
         child: adminProvider.isLoadingCategories && categories.isEmpty
-            ? const Center(child: CircularProgressIndicator())
+            ? const ComplaintListSkeleton(count: 3)
             : categories.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.category_outlined, size: 64, color: Colors.grey.shade400),
-                        const SizedBox(height: 16),
-                        Text(
-                          'No categories found',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey.shade700),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          'Tap + Add Category to create the first department category.',
-                          style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
-                        ),
-                      ],
-                    ),
+                ? EmptyStateView(
+                    icon: Icons.category_outlined,
+                    title: 'No categories found',
+                    message: 'Tap + Add Category to create the first department category.',
+                    actionLabel: 'Refresh Categories',
+                    onAction: () => adminProvider.fetchCategoriesAdmin(),
                   )
                 : ListView.builder(
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),

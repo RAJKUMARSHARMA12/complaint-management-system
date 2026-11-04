@@ -5,6 +5,8 @@ import 'package:major_project/providers/auth_provider.dart';
 import 'package:major_project/providers/complaint_provider.dart';
 import 'package:major_project/providers/notification_provider.dart';
 import 'package:major_project/widgets/complaint_card.dart';
+import 'package:major_project/widgets/empty_state_view.dart';
+import 'package:major_project/widgets/skeleton_loading.dart';
 import 'package:major_project/widgets/status_update_bottom_sheet.dart';
 
 class AuthorityHomeScreen extends StatefulWidget {
@@ -166,7 +168,10 @@ class _AuthorityHomeScreenState extends State<AuthorityHomeScreen> {
           ),
         ],
       ),
-      body: RefreshIndicator(
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.opaque,
+        child: RefreshIndicator(
         onRefresh: () async {
           await complaintProvider.fetchAssignedComplaints(refresh: true);
         },
@@ -338,34 +343,19 @@ class _AuthorityHomeScreenState extends State<AuthorityHomeScreen> {
 
             // Queue List or Empty State
             if (complaintProvider.isLoadingAssigned && assignedList.isEmpty)
-              const SliverFillRemaining(
-                child: Center(child: CircularProgressIndicator()),
+              const SliverToBoxAdapter(
+                child: ComplaintListSkeleton(count: 3),
               )
             else if (filteredList.isEmpty)
               SliverFillRemaining(
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.assignment_turned_in_outlined, size: 64, color: Colors.grey.shade400),
-                      const SizedBox(height: 16),
-                      Text(
-                        'No tickets found in $_selectedFilter queue',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey.shade700,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        _searchQuery.isNotEmpty
-                            ? 'No matches for "$_searchQuery"'
-                            : 'All assigned tasks in this state are clear.',
-                        style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
-                      ),
-                    ],
-                  ),
+                child: EmptyStateView(
+                  icon: Icons.assignment_turned_in_outlined,
+                  title: 'No tickets found in $_selectedFilter queue',
+                  message: _searchQuery.isNotEmpty
+                      ? 'No matches for "$_searchQuery"'
+                      : 'All assigned tasks in this state are clear.',
+                  actionLabel: 'Refresh Queue',
+                  onAction: () => complaintProvider.fetchAssignedComplaints(refresh: true),
                 ),
               )
             else
@@ -418,6 +408,7 @@ class _AuthorityHomeScreenState extends State<AuthorityHomeScreen> {
               ),
           ],
         ),
+      ),
       ),
     );
   }

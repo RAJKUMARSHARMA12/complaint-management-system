@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:major_project/models/complaint_model.dart';
 import 'package:major_project/providers/complaint_provider.dart';
 import 'package:major_project/widgets/complaint_card.dart';
+import 'package:major_project/widgets/empty_state_view.dart';
+import 'package:major_project/widgets/skeleton_loading.dart';
 
 class MyComplaintsScreen extends StatefulWidget {
   const MyComplaintsScreen({super.key});
@@ -67,7 +69,6 @@ class _MyComplaintsScreenState extends State<MyComplaintsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final provider = Provider.of<ComplaintProvider>(context);
     final filteredList = _filterComplaints(provider);
 
@@ -93,8 +94,11 @@ class _MyComplaintsScreenState extends State<MyComplaintsScreen> {
         icon: const Icon(Icons.add_rounded),
         label: const Text('Raise Grievance'),
       ),
-      body: Column(
-        children: [
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.opaque,
+        child: Column(
+          children: [
           // Search & Filter Header
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
@@ -153,40 +157,16 @@ class _MyComplaintsScreenState extends State<MyComplaintsScreen> {
             child: RefreshIndicator(
               onRefresh: () => provider.fetchMyComplaints(refresh: true),
               child: provider.isLoadingComplaints && provider.myComplaints.isEmpty
-                  ? const Center(child: CircularProgressIndicator())
+                  ? const ComplaintListSkeleton(count: 4)
                   : filteredList.isEmpty
-                      ? ListView(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          children: [
-                            SizedBox(height: MediaQuery.of(context).size.height * 0.15),
-                            Center(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.inbox_outlined,
-                                    size: 64,
-                                    color: Colors.grey.shade400,
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    'No complaints found',
-                                    style: theme.textTheme.titleMedium?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.grey.shade700,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    _searchQuery.isNotEmpty
-                                        ? 'No results matching "$_searchQuery"'
-                                        : 'No grievances in the "$_selectedFilter" category.',
-                                    style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                      ? EmptyStateView(
+                          icon: Icons.inbox_outlined,
+                          title: 'No complaints found',
+                          message: _searchQuery.isNotEmpty
+                              ? 'No results matching "$_searchQuery"'
+                              : 'No grievances in the "$_selectedFilter" filter.',
+                          actionLabel: 'Refresh List',
+                          onAction: () => provider.fetchMyComplaints(refresh: true),
                         )
                       : ListView.builder(
                           physics: const AlwaysScrollableScrollPhysics(),
@@ -210,6 +190,7 @@ class _MyComplaintsScreenState extends State<MyComplaintsScreen> {
             ),
           ),
         ],
+      ),
       ),
     );
   }

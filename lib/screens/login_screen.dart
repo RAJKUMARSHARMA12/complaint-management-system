@@ -63,8 +63,11 @@ class _LoginScreenState extends State<LoginScreen> {
     final theme = Theme.of(context);
     final authProvider = Provider.of<AuthProvider>(context);
 
-    return Scaffold(
-      body: SafeArea(
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      behavior: HitTestBehavior.opaque,
+      child: Scaffold(
+        body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
@@ -195,6 +198,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ),
+      ),
       ),
     );
   }

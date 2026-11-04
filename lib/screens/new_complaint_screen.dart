@@ -186,8 +186,11 @@ class _NewComplaintScreenState extends State<NewComplaintScreen> {
       appBar: AppBar(
         title: const Text('Lodge a Complaint'),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.opaque,
+        child: SafeArea(
+          child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
           child: Form(
             key: _formKey,
@@ -453,6 +456,7 @@ class _NewComplaintScreenState extends State<NewComplaintScreen> {
             ),
           ),
         ),
+      ),
       ),
     );
   }
