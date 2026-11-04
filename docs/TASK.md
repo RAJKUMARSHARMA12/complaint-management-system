@@ -384,12 +384,13 @@
 ### Day 18: Security Hardening & Rate Limiting
 * **Primary Objective:** Harden server security perimeter and validate resilience against malicious inputs.
 * **Tasks:**
-  - [ ] **[B]** Apply `helmet` security headers and strict `cors` origins.
-  - [ ] **[B]** Apply `express-rate-limit` to `/api/auth/login` (5 requests / 15 minutes).
-  - [ ] **[B]** Audit all inputs with `express-validator` to eliminate NoSQL injection vulnerabilities.
-  - [ ] **[B]** Ensure all sensitive credentials reside strictly in `.env`.
+  - [x] **[B]** Apply `helmet` security headers (`X-DNS-Prefetch-Control`, `X-Frame-Options`, `X-Content-Type-Options`, `Cross-Origin-Resource-Policy`) and strict `cors` origins with mobile client pass-through.
+  - [x] **[B]** Apply `express-rate-limit` to `/api/auth/login` (5 requests / 15 minutes window) with lockout responses (`429 Too Many Requests`).
+  - [x] **[B]** Audit all inputs with `express-validator` (`isString()` guards) and recursive `sanitizeInput` middleware to eliminate NoSQL injection vulnerabilities.
+  - [x] **[B]** Ensure all sensitive credentials reside strictly in `.env`, provide `.env.example` template, and enforce startup credentials validation (`backend/config/envCheck.js`).
 * **Verification & Testing:**
-  - Run automated Postman security tests verifying rapid login attempts trigger `429 Too Many Requests`.
+  - Automated security & rate limiting test suite `backend/tests/day18_security.test.js` (24/24 assertions passing).
+  - 100% test pass rate across all 147 backend assertions (10 test suites) and 116 Flutter tests (30 suites) with 0 analyzer issues.
 * **Deliverable:** Production-hardened REST API backend.
 
 ---

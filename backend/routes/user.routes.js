@@ -12,22 +12,30 @@ const router = express.Router();
 
 const authorityValidation = [
   body('name')
+    .isString()
+    .withMessage('Name must be a string')
     .trim()
     .notEmpty()
     .withMessage('Name is required')
     .isLength({ min: 2, max: 50 })
     .withMessage('Name must be between 2 and 50 characters'),
   body('email')
+    .isString()
+    .withMessage('Email must be a string')
     .trim()
     .notEmpty()
     .withMessage('Email is required')
     .isEmail()
     .withMessage('Please provide a valid email'),
   body('password')
+    .isString()
+    .withMessage('Password must be a string')
     .trim()
     .isLength({ min: 6 })
     .withMessage('Password must be at least 6 characters long'),
   body('department')
+    .isString()
+    .withMessage('Department must be a string')
     .trim()
     .notEmpty()
     .withMessage('Department is required')

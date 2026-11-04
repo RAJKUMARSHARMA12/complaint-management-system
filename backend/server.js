@@ -3,29 +3,61 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const helmet = require('helmet');
 const connectDB = require('./config/db');
+const { validateEnvironment } = require('./config/envCheck');
 const errorHandler = require('./middleware/error');
+const { sanitizeInput } = require('./middleware/sanitize');
 
 // Load environment variables
 dotenv.config();
+
+// Validate critical security credentials
+validateEnvironment();
 
 // Initialize MongoDB connection
 connectDB();
 
 const app = express();
 
-// Security HTTP headers
-app.use(helmet());
+// Security HTTP headers with cross-origin resource policy enabled
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+    contentSecurityPolicy: process.env.NODE_ENV === 'production' ? undefined : false
+  })
+);
 
-// Enable CORS
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+// Strict CORS Origins
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map((o) => o.trim())
+  : ['http://localhost:3000', 'http://localhost:5001', 'http://127.0.0.1:5001'];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow mobile apps, native curl/Postman, or same-origin requests with no origin header
+      if (!origin) return callback(null, true);
+      if (
+        allowedOrigins.includes('*') ||
+        allowedOrigins.includes(origin) ||
+        process.env.NODE_ENV !== 'production'
+      ) {
+        return callback(null, true);
+      }
+      return callback(new Error(`CORS policy violation: Origin ${origin} not permitted.`));
+    },
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    credentials: true,
+    maxAge: 86400
+  })
+);
 
 // Body parser
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// NoSQL query operator sanitizer
+app.use(sanitizeInput);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

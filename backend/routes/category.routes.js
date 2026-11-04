@@ -13,6 +13,8 @@ const router = express.Router();
 
 const categoryValidation = [
   body('name')
+    .isString()
+    .withMessage('Category name must be a string')
     .trim()
     .notEmpty()
     .withMessage('Category name is required')
@@ -20,6 +22,8 @@ const categoryValidation = [
     .withMessage('Category name cannot exceed 50 characters'),
   body('description')
     .optional()
+    .isString()
+    .withMessage('Description must be a string')
     .trim()
     .isLength({ max: 200 })
     .withMessage('Description cannot exceed 200 characters'),

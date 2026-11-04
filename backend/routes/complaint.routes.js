@@ -19,23 +19,31 @@ const router = express.Router();
 
 const complaintValidation = [
   body('title')
+    .isString()
+    .withMessage('Title must be a string')
     .trim()
     .notEmpty()
     .withMessage('Title is required')
     .isLength({ min: 5, max: 100 })
     .withMessage('Title must be between 5 and 100 characters'),
   body('description')
+    .isString()
+    .withMessage('Description must be a string')
     .trim()
     .notEmpty()
     .withMessage('Description is required')
     .isLength({ min: 20, max: 1000 })
     .withMessage('Description must be between 20 and 1000 characters'),
   body('category')
+    .isString()
+    .withMessage('Category must be a string')
     .notEmpty()
     .withMessage('Category is required')
     .isMongoId()
     .withMessage('Category must be a valid ID'),
   body('location')
+    .isString()
+    .withMessage('Location must be a string')
     .trim()
     .notEmpty()
     .withMessage('Location is required')
@@ -43,23 +51,31 @@ const complaintValidation = [
     .withMessage('Location cannot exceed 100 characters'),
   body('priority')
     .optional()
+    .isString()
+    .withMessage('Priority must be a string')
     .isIn(['Low', 'Medium', 'High', 'Urgent'])
     .withMessage('Priority must be Low, Medium, High, or Urgent')
 ];
 
 const statusValidation = [
   body('status')
+    .isString()
+    .withMessage('Status must be a string')
     .notEmpty()
     .withMessage('Status is required')
     .isIn(['Submitted', 'Assigned', 'In Progress', 'Resolved', 'Closed'])
     .withMessage('Invalid status state'),
   body('remark')
     .optional()
+    .isString()
+    .withMessage('Remark must be a string')
     .trim()
 ];
 
 const remarkValidation = [
   body('text')
+    .isString()
+    .withMessage('Remark text must be a string')
     .trim()
     .notEmpty()
     .withMessage('Remark text is required')
