@@ -4,6 +4,7 @@ import 'package:major_project/providers/auth_provider.dart';
 import 'package:major_project/providers/complaint_provider.dart';
 import 'package:major_project/providers/notification_provider.dart';
 import 'package:major_project/widgets/complaint_card.dart';
+import 'package:major_project/widgets/skeleton_loading.dart';
 
 class StudentHomeScreen extends StatefulWidget {
   const StudentHomeScreen({super.key});
@@ -315,12 +316,7 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
 
               // Recent Grievance List or Empty State
               if (complaintProvider.isLoadingComplaints && complaintProvider.myComplaints.isEmpty)
-                const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(32.0),
-                    child: CircularProgressIndicator(),
-                  ),
-                )
+                const ComplaintListSkeleton(count: 2)
               else if (complaintProvider.myComplaints.isEmpty)
                 Card(
                   elevation: 0,

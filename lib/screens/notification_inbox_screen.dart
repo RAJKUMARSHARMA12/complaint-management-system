@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:major_project/models/notification_model.dart';
 import 'package:major_project/providers/notification_provider.dart';
 import 'package:major_project/screens/complaint_detail_screen.dart';
+import 'package:major_project/widgets/skeleton_loading.dart';
+import 'package:major_project/widgets/empty_state_view.dart';
 
 class NotificationInboxScreen extends StatefulWidget {
   const NotificationInboxScreen({super.key});
@@ -98,7 +100,7 @@ class _NotificationInboxScreenState extends State<NotificationInboxScreen> {
           body: RefreshIndicator(
             onRefresh: () => provider.fetchNotifications(silent: false),
             child: provider.isLoading && notifications.isEmpty
-                ? const Center(child: CircularProgressIndicator())
+                ? const ComplaintListSkeleton(count: 4)
                 : provider.errorMessage != null && notifications.isEmpty
                     ? Center(
                         child: Padding(
@@ -123,22 +125,20 @@ class _NotificationInboxScreenState extends State<NotificationInboxScreen> {
                         ),
                       )
                     : notifications.isEmpty
-                        ? const Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.notifications_none, size: 64, color: Colors.grey),
-                                SizedBox(height: 12),
-                                Text(
-                                  'Your inbox is empty',
-                                  style: TextStyle(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.w500),
+                        ? LayoutBuilder(
+                            builder: (context, constraints) => SingleChildScrollView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                                child: const Center(
+                                  child: EmptyStateView(
+                                    icon: Icons.notifications_none_rounded,
+                                    title: 'Your inbox is empty',
+                                    message:
+                                        'Updates regarding your lodged grievances and operational status changes will appear here.',
+                                  ),
                                 ),
-                                SizedBox(height: 4),
-                                Text(
-                                  'Updates regarding your lodged complaints will appear here.',
-                                  style: TextStyle(fontSize: 13, color: Colors.grey),
-                                ),
-                              ],
+                              ),
                             ),
                           )
                         : ListView.separated(
