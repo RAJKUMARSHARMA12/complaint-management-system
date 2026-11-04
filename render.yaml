@@ -1,15 +1,15 @@
 # ==============================================================================
 # CampusVoice Cloud Deployment Blueprint (Render.com)
-# Web Service Specification for Node.js REST API Backend
+# All-in-One Docker Web Service (Node.js REST API + Embedded MongoDB Server)
 # ==============================================================================
 services:
   - type: web
     name: campusvoice-api
-    runtime: node
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
     plan: free
     region: oregon
-    rootDir: backend
-    buildCommand: npm install
     startCommand: node server.js
     healthCheckPath: /health
     autoDeploy: true
@@ -19,7 +19,7 @@ services:
       - key: PORT
         value: "10000"
       - key: MONGO_URI
-        sync: false
+        value: "mongodb://127.0.0.1:27017/college_cms"
       - key: JWT_SECRET
         generateValue: true
       - key: JWT_EXPIRES_IN
@@ -31,10 +31,4 @@ services:
       - key: API_RATE_LIMIT_MAX
         value: "100"
       - key: STORAGE_TYPE
-        value: "cloudinary"
-      - key: CLOUDINARY_CLOUD_NAME
-        sync: false
-      - key: CLOUDINARY_API_KEY
-        sync: false
-      - key: CLOUDINARY_API_SECRET
-        sync: false
+        value: "local"
