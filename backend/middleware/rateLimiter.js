@@ -11,7 +11,7 @@ const loginLimiter = rateLimit({
   standardHeaders: true, // Return standard `RateLimit-*` headers
   legacyHeaders: false, // Disable legacy `X-RateLimit-*` headers
   statusCode: 429,
-  validate: { xForwardedForHeader: false },
+  validate: false,
   message: {
     success: false,
     message: 'Too many login attempts from this IP. Please try again after 15 minutes.'
@@ -37,7 +37,7 @@ const apiLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   statusCode: 429,
-  validate: { xForwardedForHeader: false },
+  validate: false,
   message: {
     success: false,
     message: 'Too many requests from this IP. Please try again later.'
