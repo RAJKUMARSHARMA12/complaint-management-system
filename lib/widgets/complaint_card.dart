@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:major_project/models/complaint_model.dart';
+import 'package:major_project/widgets/escalation_badge.dart';
 import 'package:major_project/widgets/priority_badge.dart';
 import 'package:major_project/widgets/status_chip.dart';
 
@@ -68,6 +69,10 @@ class ComplaintCard extends StatelessWidget {
                   StatusChip(status: complaint.status),
                 ],
               ),
+              if (complaint.isEscalated) ...[
+                const SizedBox(height: 8),
+                const EscalationBadge(isCompact: true),
+              ],
               const SizedBox(height: 10),
 
               // Title

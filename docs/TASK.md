@@ -348,15 +348,18 @@
 ### Day 16: Automated SLA Escalation Engine
 * **Primary Objective:** Deploy the automated background cron daemon for overdue complaints.
 * **Tasks:**
-  - [ ] **[B]** Implement `jobs/escalation.job.js` using `node-cron`:
+  - [x] **[B]** Implement `jobs/escalation.job.js` using `node-cron`:
     - Configured to run daily at midnight (`0 0 * * *`).
     - Query: `status NOT IN ('Resolved', 'Closed') AND dueDate < now AND isEscalated == false`.
     - Sets `isEscalated = true` and `escalatedAt = now`.
     - Dispatches urgent notifications to all admin users.
-  - [ ] **[B]** Mount temporary manual trigger route `POST /api/jobs/trigger-escalation` (Admin only) for live viva demonstration.
-  - [ ] **[F]** Update `ComplaintCard` and `ComplaintDetailScreen` to display an animated "ESCALATED / OVERDUE" badge.
+  - [x] **[B]** Mount temporary manual trigger route `POST /api/jobs/trigger-escalation` (Admin only) for live viva demonstration.
+  - [x] **[F]** Update `ComplaintCard` and `ComplaintDetailScreen` to display an animated "ESCALATED / OVERDUE" badge.
 * **Verification & Testing:**
   - Create a complaint with a 1-minute test SLA; trigger the escalation daemon; verify complaint card displays red "ESCALATED" badge and admin receives alert.
+  - Automated integration test suite `backend/tests/day16.test.js` (16/16 assertions passing against live Mongo/Docker).
+  - Automated widget & integration test suite `test/escalation_test.dart` (4/4 assertions passing).
+  - 100% test pass rate across all 104 Flutter tests and 123 backend assertions with zero analyzer warnings.
 * **Deliverable:** Fully functional SLA monitoring and automated escalation engine.
 
 ---

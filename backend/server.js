@@ -52,6 +52,7 @@ app.use('/api/categories', require('./routes/category.routes'));
 app.use('/api/complaints', require('./routes/complaint.routes'));
 app.use('/api/notifications', require('./routes/notification.routes'));
 app.use('/api/dashboard', require('./routes/dashboard.routes'));
+app.use('/api/jobs', require('./routes/job.routes'));
 
 // Catch-all for undefined routes
 app.use((req, res) => {
@@ -70,6 +71,9 @@ let server;
 if (process.env.NODE_ENV !== 'test') {
   server = app.listen(PORT, () => {
     console.log(`[CampusVoice API] Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+    // Initialize background cron jobs
+    const { initEscalationJob } = require('./jobs/escalation.job');
+    initEscalationJob();
   });
 }
 

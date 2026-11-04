@@ -6,6 +6,7 @@ import 'package:major_project/providers/complaint_provider.dart';
 import 'package:major_project/providers/auth_provider.dart';
 import 'package:major_project/widgets/status_chip.dart';
 import 'package:major_project/widgets/priority_badge.dart';
+import 'package:major_project/widgets/escalation_badge.dart';
 import 'package:major_project/widgets/feedback_dialog.dart';
 import 'package:major_project/widgets/status_update_bottom_sheet.dart';
 
@@ -297,6 +298,10 @@ class _ComplaintDetailScreenState extends State<ComplaintDetailScreen> {
                         PriorityBadge(priority: complaint.priority),
                       ],
                     ),
+                    if (complaint.isEscalated) ...[
+                      const SizedBox(height: 10),
+                      const EscalationBadge(),
+                    ],
                     const SizedBox(height: 12),
                     Text(
                       complaint.title,
