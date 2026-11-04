@@ -59,11 +59,11 @@ void main() {
     });
 
     test('ApiClient defaults to the live Render cloud domain', () {
-      expect(ApiClient.liveCloudUrl, 'https://campusvoice-api.onrender.com/api');
-      expect(ApiClient.defaultBaseUrl, 'https://campusvoice-api.onrender.com/api');
+      expect(ApiClient.liveCloudUrl, 'https://complaint-management-system-fesn.onrender.com/api');
+      expect(ApiClient.defaultBaseUrl, 'https://complaint-management-system-fesn.onrender.com/api');
 
       final client = ApiClient(storageService: storage);
-      expect(client.dio.options.baseUrl, 'https://campusvoice-api.onrender.com/api');
+      expect(client.dio.options.baseUrl, 'https://complaint-management-system-fesn.onrender.com/api');
     });
 
     test('ApiClient allows custom baseUrl override', () {

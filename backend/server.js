@@ -18,6 +18,9 @@ connectDB();
 
 const app = express();
 
+// Trust reverse proxy (Render, Cloudflare, load balancers) for accurate client IP rate limiting
+app.set('trust proxy', 1);
+
 // Security HTTP headers with cross-origin resource policy enabled
 app.use(
   helmet({
