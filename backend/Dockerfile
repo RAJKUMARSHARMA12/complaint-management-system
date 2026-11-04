@@ -1,4 +1,7 @@
-# All-in-One Container: MongoDB 6.0 Base + Node.js 20 LTS
+# Multi-stage container using official Node.js image for asset preparation
+FROM node:20-slim AS node-base
+
+# All-in-One Production Container: MongoDB 6.0 Base + Node.js 20 LTS
 FROM mongo:6.0
 
 # Install Node.js 20 from official NodeSource repository
