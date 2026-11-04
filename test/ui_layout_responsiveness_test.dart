@@ -11,6 +11,7 @@ import 'package:major_project/providers/complaint_provider.dart';
 import 'package:major_project/providers/notification_provider.dart';
 import 'package:major_project/screens/admin_all_complaints_screen.dart';
 import 'package:major_project/screens/admin_dashboard_screen.dart';
+import 'package:major_project/screens/complaint_detail_screen.dart';
 import 'package:major_project/screens/manage_categories_screen.dart';
 import 'package:major_project/screens/manage_users_screen.dart';
 import 'package:major_project/services/category_service.dart';
@@ -148,6 +149,32 @@ void main() {
                           'assignedTo': {'name': 'Warden Sharma Very Long Name Example'},
                         },
                       ],
+                    },
+                  },
+                ),
+              );
+            }
+            if (options.path == '/complaints/cmp1') {
+              return handler.resolve(
+                Response(
+                  requestOptions: options,
+                  statusCode: 200,
+                  data: {
+                    'success': true,
+                    'data': {
+                      '_id': 'cmp1',
+                      'complaintId': 'CMP-999999',
+                      'title': 'Very Long Complaint Title Describing Water Leakage in Detail for Testing Overflow',
+                      'description': 'The pipe connected to water tank 4 on the terrace has burst, flooding the entire corridor on floor 3 and seeping through floorboards.',
+                      'category': {'name': 'Hostel Maintenance Department'},
+                      'location': 'Hostel Block 4, 3rd Floor East Wing Corridor',
+                      'status': 'In Progress',
+                      'priority': 'Urgent',
+                      'isEscalated': true,
+                      'images': [],
+                      'remarks': [],
+                      'dueDate': DateTime.now().subtract(const Duration(days: 1)).toIso8601String(),
+                      'assignedTo': {'name': 'Warden Sharma Very Long Name Example'},
                     },
                   },
                 ),
@@ -328,6 +355,21 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(AdminDashboardScreen), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('ComplaintDetailScreen with EscalationBadge renders on compact 360x640 with zero overflow', (tester) async {
+      tester.view.physicalSize = const Size(360, 640);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(wrap(const ComplaintDetailScreen(complaintId: 'cmp1')));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.pump(const Duration(milliseconds: 100));
+
+      expect(find.byType(ComplaintDetailScreen), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
   });

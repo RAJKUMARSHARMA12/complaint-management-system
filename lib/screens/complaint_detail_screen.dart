@@ -317,15 +317,19 @@ class _ComplaintDetailScreenState extends State<ComplaintDetailScreen> {
                       children: [
                         Icon(Icons.category_outlined, size: 16, color: Colors.grey.shade600),
                         const SizedBox(width: 4),
-                        Text(
-                          complaint.categoryName,
-                          style: TextStyle(fontSize: 13, color: Colors.grey.shade800),
+                        Flexible(
+                          child: Text(
+                            complaint.categoryName,
+                            style: TextStyle(fontSize: 13, color: Colors.grey.shade800),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                         if (complaint.location != null) ...[
                           const SizedBox(width: 12),
                           Icon(Icons.location_on_outlined, size: 16, color: Colors.grey.shade600),
                           const SizedBox(width: 4),
-                          Expanded(
+                          Flexible(
                             child: Text(
                               complaint.location!,
                               style: TextStyle(fontSize: 13, color: Colors.grey.shade800),
@@ -342,12 +346,16 @@ class _ComplaintDetailScreenState extends State<ComplaintDetailScreen> {
                       children: [
                         Icon(Icons.timer_outlined, size: 16, color: _slaColor(complaint.dueDate)),
                         const SizedBox(width: 6),
-                        Text(
-                          _formatSlaCountdown(complaint.dueDate),
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: _slaColor(complaint.dueDate),
+                        Flexible(
+                          child: Text(
+                            _formatSlaCountdown(complaint.dueDate),
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: _slaColor(complaint.dueDate),
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],
