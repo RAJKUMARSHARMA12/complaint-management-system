@@ -1,22 +1,16 @@
-# All-in-One Container: Node.js 20 + MongoDB Server
-FROM node:20-bullseye-slim
+# All-in-One Container: MongoDB 6.0 Base + Node.js 20 LTS
+FROM mongo:6.0
 
-# Install system utilities & official MongoDB 6.0 Server
+# Install Node.js 20 from official NodeSource repository
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
-    gnupg \
     ca-certificates \
     procps \
-    && curl -fsSL https://www.mongodb.org/static/pgp/server-6.0.asc | \
-       gpg -o /usr/share/keyrings/mongodb-server-6.0.gpg --dearmor \
-    && echo "deb [ signed-by=/usr/share/keyrings/mongodb-server-6.0.gpg ] http://repo.mongodb.org/apt/debian bullseye/mongodb-org/6.0 main" | \
-       tee /etc/apt/sources.list.d/mongodb-org-6.0.list \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends \
-       mongodb-org-server \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y --no-install-recommends nodejs \
     && rm -rf /var/lib/apt/lists/*
 
-# Create directories for MongoDB data, logs, and uploads
+# Create directories for data and uploads
 RUN mkdir -p /data/db /var/log/mongodb /app/uploads
 
 WORKDIR /app
