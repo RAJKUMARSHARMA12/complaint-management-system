@@ -92,7 +92,7 @@ const seedData = async () => {
   try {
     const connStr =
       process.env.MONGO_URI ||
-      'mongodb://admin:password123@localhost:27017/college_cms?authSource=admin';
+      'mongodb://127.0.0.1:27017/college_cms';
     await mongoose.connect(connStr);
     console.log(`[Seeder] Connected to MongoDB at ${connStr}`);
 

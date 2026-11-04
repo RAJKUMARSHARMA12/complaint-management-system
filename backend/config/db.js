@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    const connStr = process.env.MONGO_URI || 'mongodb://admin:password123@localhost:27017/college_cms?authSource=admin';
+    const connStr = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/college_cms';
     const conn = await mongoose.connect(connStr, {
       serverSelectionTimeoutMS: 5000,
       autoIndex: true
